@@ -1,14 +1,8 @@
 import jwt from "jsonwebtoken";
 import ApiError from "./api-erros";
 import dotenv from "dotenv";
+import type { UserPayload } from "../types";
 dotenv.config();
-
-export type UserPayload = {
-  id: string;
-  fullName: string;
-  email: string;
-  phone: string;
-};
 
 const SECRET_KEY = process.env.JWT_SECRET!;
 

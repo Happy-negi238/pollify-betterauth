@@ -1,22 +1,18 @@
 import crypto from "node:crypto";
+import { eq, type InferSelectModel } from "drizzle-orm";
 
 import type { pollCreateType } from "./poll.types";
 import { db } from "../../index";
 import { answers, question } from "../../common/db/schema";
 import ApiError from "../../common/utils/api-erros";
-import { eq, type InferSelectModel } from "drizzle-orm";
 
 const RANDOMBYTES_LENGTH = 8;
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 
-type Question = InferSelectModel<typeof question>;
 type Answers = Omit<
   InferSelectModel<typeof answers>,
   "votes" | "createdAt" | "updatedAt"
 >;
-
-const pollQuestionCache = new Map<string, Question>();
-const pollAnswerCache = new Map<string, Answers[]>();
 
 function generateUrl(code: string) {
   return `${BASE_URL}/${code}`;
@@ -108,25 +104,29 @@ export const createdPollService = async (dashboardCode: string) => {
   return { success: true, url: pollUrl, visibility: result.visibility };
 };
 
-export const pollVoteGetService = async (pollCode: string) => {
-  const [questionData] = await db
-    .select()
-    .from(question)
-    .where(eq(question.pollCode, pollCode));
+export const pollVoteGetService = async (questionData: {
+  id: string;
+  title: string;
+  description: string | null;
+  visibility: string;
+  status: "live" | "ended";
+}) => {
+  // const [questionData] = await db
+  //   .select()
+  //   .from(question)
+  //   .where(eq(question.pollCode, pollCode));
 
-  if (!questionData) {
-    throw ApiError.InternalServerError("Error to getting poll");
-  }
+  // if (!questionData) {
+  //   throw ApiError.InternalServerError("Error to getting poll");
+  // }
 
-  if (questionData.expireAt < new Date()) {
-    throw ApiError.badRequest("Poll is expired");
-  }
+  // if (questionData.expireAt < new Date()) {
+  //   throw ApiError.badRequest("Poll is expired");
+  // }
 
-  if(questionData.visibility === "private"){
-    
-  }
-
-  pollQuestionCache.set(pollCode, questionData);
+  // if(questionData.visibility === "private"){
+  //   authentication(req: Request, res: Response, next: NextFunction)
+  // }
 
   const answerData = await db
     .select({
@@ -142,14 +142,13 @@ export const pollVoteGetService = async (pollCode: string) => {
     throw ApiError.InternalServerError("Failed to get answers");
   }
 
-  pollAnswerCache.set(pollCode, answerData);
-
   return {
     success: true,
     question: {
       title: questionData.title,
       description: questionData.description,
       visibility: questionData.visibility,
+      status: questionData.status,
     },
 
     answers: answerData,
@@ -157,13 +156,8 @@ export const pollVoteGetService = async (pollCode: string) => {
 };
 
 export const pollVotePostService = async (pollCode: string, body: [{}]) => {
-
   // const pollQuestion = pollQuestionCache.get(pollCode);
   // const pollAnswer = pollAnswerCache.get(pollCode);
-  
   // if (pollQuestion !== undefined && pollAnswer !== undefined) {
-    
   // }
-
-
 };

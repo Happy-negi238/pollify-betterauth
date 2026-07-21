@@ -1,5 +1,6 @@
 import express from "express";
 import * as controller from "./poll.controller";
+import { pollPrivate } from "./poll.middleware";
 
 const pollRoutes = express.Router();
 
@@ -8,5 +9,5 @@ pollRoutes.get(
   "/created-poll/:dashboard_code",
   controller.createdPollController,
 );
-pollRoutes.get("/poll-vote/:poll_code", controller.pollVoteGetController);
-pollRoutes.post("/poll-vote/:poll_code", controller.pollVotePostController)
+pollRoutes.get("/poll-vote/:poll_code", pollPrivate, controller.pollVoteGetController);
+pollRoutes.post("/poll-vote/:poll_code", controller.pollVotePostController);

@@ -2,14 +2,6 @@ import type { NextFunction, Request, Response } from "express";
 import ApiError from "../utils/api-erros";
 import { verifyToken, type UserPayload } from "../utils/jwt-token";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user: UserPayload;
-    }
-  }
-}
-
 export const authentication = (
   req: Request,
   res: Response,

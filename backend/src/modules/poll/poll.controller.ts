@@ -4,15 +4,13 @@ import type { pollCreateType } from "./poll.types";
 import * as service from "./poll.service";
 import ApiError from "../../common/utils/api-erros";
 import ApiResponse from "../../common/utils/api-response";
+import type { PollParams } from "./poll.middleware";
 
-interface DashboardParams {
+type DashboardParams = {
   dashboard_code: string;
 }
-interface PollParams {
-  poll_code: string;
-}
 
-function verifyCode(code: string | undefined, message: string) {
+export function verifyCode(code: string | undefined, message: string) {
   if (!code) {
     throw ApiError.unauthorized(message);
   }
@@ -61,16 +59,18 @@ export const createdPollController = async (
   return ApiResponse.ok(res, 200, result, "Poll url created");
 };
 
-export const pollVoteGetController = async (
-  req: Request<PollParams>,
-  res: Response,
-) => {
-  const { poll_code } = req.params;
+export const pollVoteGetController = async (req: Request, res: Response) => {
+  const { id, title, description, visibility, status } = req.questionData;
 
-  verifyCode(poll_code, "Unauthorized poll code");
+  const result = await service.pollVoteGetService({
+    id,
+    title,
+    description,
+    visibility,
+    status,
+  });
 
-  const result = service.pollVoteGetService(poll_code);
-  return ApiResponse.ok(
+  ApiResponse.ok(
     res,
     200,
     result,
