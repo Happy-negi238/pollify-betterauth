@@ -4,11 +4,10 @@ import type { pollCreateType } from "./poll.types";
 import * as service from "./poll.service";
 import ApiError from "../../common/utils/api-erros";
 import ApiResponse from "../../common/utils/api-response";
-import type { PollParams } from "./poll.middleware";
 
 type DashboardParams = {
   dashboard_code: string;
-}
+};
 
 export function verifyCode(code: string | undefined, message: string) {
   if (!code) {
@@ -70,26 +69,17 @@ export const pollVoteGetController = async (req: Request, res: Response) => {
     status,
   });
 
-  ApiResponse.ok(
-    res,
-    200,
-    result,
-    "Fetch successfully questions and answer",
-  );
+  ApiResponse.ok(res, 200, result, "Fetch successfully questions and answer");
 };
 
-export const pollVotePostController = async (
-  req: Request<PollParams>,
-  res: Response,
-) => {
-  const { poll_code } = req.params;
-  const body: [{}] | null = req.body;
-
-  verifyCode(poll_code, "Unauthorized poll code");
+export const pollVotePostController = async (req: Request, res: Response) => {
+  const { id } = req.questionData;
+  const body: { answerId: string } | null = req.body;
 
   if (!body) {
     throw ApiError.badRequest("Data is not found");
   }
 
-  const result = service.pollVotePostService(poll_code, body);
+  const result = await service.pollVotePostService(id, body);
+  ApiResponse.ok(res, 200, result, "Count updated successfully");
 };

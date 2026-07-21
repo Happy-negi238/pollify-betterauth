@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import ApiError from "../utils/api-erros";
-import { verifyToken, type UserPayload } from "../utils/jwt-token";
+import { verifyToken } from "../utils/jwt-token";
+import type { UserPayload } from "../types";
 
 export const authentication = (
   req: Request,

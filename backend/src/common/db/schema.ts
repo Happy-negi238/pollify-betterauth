@@ -6,27 +6,18 @@ import {
   timestamp,
   uuid,
   varchar,
+  text
 } from "drizzle-orm/pg-core";
+import { user } from "./auth-schema";
 
 export const visibilityEnum = pgEnum("visibility", ["public", "private"]);
 export const statusEnum = pgEnum("status_enum", ["live", "ended"]);
 
-export const users = pgTable("users", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  fullName: varchar("full_name", { length: 40 }).notNull(),
-  emailId: varchar("email_id", { length: 50 }).notNull().unique(),
-  phone: varchar("phone_no", { length: 10 }),
-  password: varchar("password", { length: 66 }),
-  refreshTokenHash: varchar("refresh_token_hash", { length: 66 }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
 export const question = pgTable("question", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 20 }).notNull(),
   description: varchar("description", { length: 30 }),
   visibility: visibilityEnum("visibility").default("public").notNull(),

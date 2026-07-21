@@ -30,7 +30,7 @@ export const pollPrivate = async (
     throw ApiError.InternalServerError("Error to getting poll");
   }
 
-  if (questionData.expireAt < new Date()) {
+  if (questionData.expireAt < new Date() || questionData.status === "ended") {
     throw ApiError.badRequest("Poll is expired");
   }
 

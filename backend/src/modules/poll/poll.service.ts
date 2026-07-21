@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { eq, type InferSelectModel } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import type { pollCreateType } from "./poll.types";
 import { db } from "../../index";
@@ -8,11 +8,6 @@ import ApiError from "../../common/utils/api-erros";
 
 const RANDOMBYTES_LENGTH = 8;
 const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
-
-type Answers = Omit<
-  InferSelectModel<typeof answers>,
-  "votes" | "createdAt" | "updatedAt"
->;
 
 function generateUrl(code: string) {
   return `${BASE_URL}/${code}`;
@@ -155,9 +150,27 @@ export const pollVoteGetService = async (questionData: {
   };
 };
 
-export const pollVotePostService = async (pollCode: string, body: [{}]) => {
-  // const pollQuestion = pollQuestionCache.get(pollCode);
-  // const pollAnswer = pollAnswerCache.get(pollCode);
-  // if (pollQuestion !== undefined && pollAnswer !== undefined) {
-  // }
+export const pollVotePostService = async (
+  pollCode: string,
+  body: { answerId: string },
+) => {
+  try {
+    const answerId = body.answerId;
+    const [updateVote] = await db
+      .update(answers)
+      .set({ votes: sql`${answers.votes} + 1` })
+      .where(eq(answers.id, answerId))
+      .returning({
+        id: answers.id,
+        votes: answers.votes,
+      });
+
+    if (!updateVote) {
+      throw ApiError.badRequest("Unauthorized vote count");
+    }
+
+    return { id: updateVote.id, votes: updateVote.votes };
+  } catch (error) {
+    throw ApiError.InternalServerError("Error to count vote");
+  }
 };

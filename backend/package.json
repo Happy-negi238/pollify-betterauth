@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@better-auth/infra": "^0.3.7",
+    "better-auth": "^1.6.23",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^1.0.0-rc.4",
