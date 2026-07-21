@@ -1,5 +1,6 @@
 import {
   boolean,
+  integer,
   pgEnum,
   pgTable,
   timestamp,
@@ -15,6 +16,8 @@ export const users = pgTable("users", {
   fullName: varchar("full_name", { length: 40 }).notNull(),
   emailId: varchar("email_id", { length: 50 }).notNull().unique(),
   phone: varchar("phone_no", { length: 10 }),
+  password: varchar("password", { length: 66 }),
+  refreshTokenHash: varchar("refresh_token_hash", { length: 66 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -42,6 +45,7 @@ export const answers = pgTable("answers", {
     .references(() => question.id, { onDelete: "cascade" }),
   title: varchar("title", { length: 50 }).notNull(),
   isCorrect: boolean("is_correct").default(false),
+  votes: integer().default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

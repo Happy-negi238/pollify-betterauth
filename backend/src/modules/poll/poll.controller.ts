@@ -83,8 +83,13 @@ export const pollVotePostController = async (
   res: Response,
 ) => {
   const { poll_code } = req.params;
+  const body: [{}] | null = req.body;
 
   verifyCode(poll_code, "Unauthorized poll code");
 
-  const result = service.pollVotePostService(poll_code);
+  if (!body) {
+    throw ApiError.badRequest("Data is not found");
+  }
+
+  const result = service.pollVotePostService(poll_code, body);
 };

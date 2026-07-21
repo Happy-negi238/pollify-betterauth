@@ -12,7 +12,7 @@ const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
 type Question = InferSelectModel<typeof question>;
 type Answers = Omit<
   InferSelectModel<typeof answers>,
-  "id" | "questionId" | "createdAt" | "updatedAt"
+  "votes" | "createdAt" | "updatedAt"
 >;
 
 const pollQuestionCache = new Map<string, Question>();
@@ -122,10 +122,16 @@ export const pollVoteGetService = async (pollCode: string) => {
     throw ApiError.badRequest("Poll is expired");
   }
 
+  if(questionData.visibility === "private"){
+    
+  }
+
   pollQuestionCache.set(pollCode, questionData);
 
   const answerData = await db
     .select({
+      id: answers.id,
+      questionId: answers.questionId,
       title: answers.title,
       isCorrect: answers.isCorrect,
     })
@@ -150,4 +156,14 @@ export const pollVoteGetService = async (pollCode: string) => {
   };
 };
 
-export const pollVotePostService = async (pollCode: string) => {};
+export const pollVotePostService = async (pollCode: string, body: [{}]) => {
+
+  // const pollQuestion = pollQuestionCache.get(pollCode);
+  // const pollAnswer = pollAnswerCache.get(pollCode);
+  
+  // if (pollQuestion !== undefined && pollAnswer !== undefined) {
+    
+  // }
+
+
+};
