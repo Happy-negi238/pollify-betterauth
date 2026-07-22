@@ -18,7 +18,7 @@ export const signUp = async (data: SignUpType) => {
     password: data.password,
   });
 
-  return { response };
+  return { data: response };
 };
 
 export const signIn = async (data: LoginInType) => {
@@ -27,5 +27,5 @@ export const signIn = async (data: LoginInType) => {
     password: data.password,
   });
 
-  return { response };
+  return { data: response };
 };

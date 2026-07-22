@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { signUp } from "@/better-auth/api";
 import { BarChart2 } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 type SignUpForm = {
   name: string;
@@ -10,6 +12,9 @@ type SignUpForm = {
 };
 
 const SignUp = () => {
+
+  const navigation = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -21,35 +26,42 @@ const SignUp = () => {
 
   const password = watch("password");
 
-  const onSubmit = async (data: SignUpForm) => {
+  const onSubmit = async (signUpFormFields: SignUpForm) => {
     try {
       const response = await signUp({
-        name: data.name,
-        email: data.email,
-        password: data.password,
+        name: signUpFormFields.name,
+        email: signUpFormFields.email,
+        password: signUpFormFields.password,
       });
 
-      console.log("response: ", response);
+      const { data, error } = response.data;
 
-      console.log("Account created");
+      if (error) {
+        toast.error(error.message!);
+        return;
+      }
+
+      toast.success("Account created successfully!");
+      navigation("/log-in");
     } catch (error) {
-      console.error(error);
+      toast.error("Error: Creating account")
     }
   };
 
   return (
     <section className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-12">
+      <Toaster position="top-right" />
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/50">
         <div className="text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-xl text-white">
             <BarChart2 strokeWidth={4} />
           </div>
 
-          <h1 className="mt-5 text-2xl font-semibold text-slate-900">
+          <h1 className="mt-3 text-2xl font-semibold text-slate-900">
             Create your account
           </h1>
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
+          <p className="mt-1 text-sm leading-6 text-slate-500">
             Start creating live polls in minutes.
           </p>
         </div>
@@ -57,7 +69,7 @@ const SignUp = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
           {/* Name */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700">
               Full Name
             </label>
 
@@ -67,7 +79,8 @@ const SignUp = () => {
               {...register("name", {
                 required: "Name is required",
               })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm 
+              outline-none transition focus:border-blue-300 focus:ring-blue-500/20 focus:ring-2"
             />
 
             {errors.name && (
@@ -77,7 +90,7 @@ const SignUp = () => {
 
           {/* Email */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700">
               Email
             </label>
 
@@ -91,7 +104,8 @@ const SignUp = () => {
                   message: "Enter a valid email",
                 },
               })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm 
+              outline-none transition focus:border-blue-300 focus:ring-blue-500/20 focus:ring-2"
             />
 
             {errors.email && (
@@ -103,7 +117,7 @@ const SignUp = () => {
 
           {/* Password */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700">
               Password
             </label>
 
@@ -117,7 +131,8 @@ const SignUp = () => {
                   message: "Password must be at least 8 characters",
                 },
               })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm 
+              outline-none transition focus:border-blue-300 focus:ring-blue-500/20 focus:ring-2"
             />
 
             {errors.password && (
@@ -129,7 +144,7 @@ const SignUp = () => {
 
           {/* Confirm Password */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
+            <label className="mb-1 block text-sm font-medium text-slate-700">
               Confirm Password
             </label>
 
@@ -141,7 +156,8 @@ const SignUp = () => {
                 validate: (value) =>
                   value === password || "Passwords do not match",
               })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:bg-white"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm 
+              outline-none transition focus:border-blue-300 focus:ring-blue-500/20 focus:ring-2"
             />
 
             {errors.confirmPassword && (
@@ -163,7 +179,7 @@ const SignUp = () => {
         <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{" "}
           <a
-            href="/sign-in"
+            href="/log-in"
             className="font-medium text-blue-600 hover:text-blue-700"
           >
             Sign in

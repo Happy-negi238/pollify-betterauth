@@ -13,11 +13,11 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-slate-50/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <div className="flex items-center gap-1">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-600 text-white">
-            <BarChart2 strokeWidth={4} />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+            <BarChart2 strokeWidth={3} />
           </div>
 
-          <h1 className="text-xl font-semibold text-slate-800">Pollify</h1>
+          <h1 className="text-xl font-bold text-slate-800">Pollify</h1>
         </div>
 
         <nav className="hidden items-center gap-8 text-sm text-slate-600 md:flex">
@@ -33,13 +33,17 @@ const Header = () => {
         </nav>
 
         <div className="flex gap-3">
-          <button className="rounded-lg border border-slate-300 px-4 py-2 text-sm">
-            <Link to="/log-in">Log in</Link>
-          </button>
+          <Link to="/log-in">
+            <button className="rounded-lg border border-slate-300 px-4 py-2 text-sm">
+              Log in
+            </button>
+          </Link>
 
-          <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700">
-            <Link to="/sign-up">Sign up</Link>
-          </button>
+          <Link to="/sign-up">
+            <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700">
+              Sign up
+            </button>
+          </Link>
         </div>
       </div>
     </header>
