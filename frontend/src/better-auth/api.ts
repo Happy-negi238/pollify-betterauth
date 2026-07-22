@@ -6,6 +6,11 @@ export type SignUpType = {
   password: string;
 };
 
+export type LoginInType = {
+  email: string;
+  password: string;
+};
+
 export const signUp = async (data: SignUpType) => {
   const response = await authClient.signUp.email({
     name: data.name,
@@ -13,5 +18,14 @@ export const signUp = async (data: SignUpType) => {
     password: data.password,
   });
 
-  console.log(response);
+  return { response };
+};
+
+export const signIn = async (data: LoginInType) => {
+  const response = await authClient.signIn.email({
+    email: data.email,
+    password: data.password,
+  });
+
+  return { response };
 };

@@ -1,17 +1,20 @@
 import { createServer } from "node:http";
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import { pollRoutes } from "./src/modules/poll/poll.route";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./src/modules/auth/auth";
-import { socketIntializer } from "./src/common/socket";
+import { corsConfig, socketIntializer } from "./src/common/socket";
 
 function main() {
   const app = express();
   const server = createServer(app);
 
   socketIntializer(server);
+
+  app.use(cors(corsConfig));
 
   app.all("/api/auth/*splat", toNodeHandler(auth));
   app.use(cookieParser());
