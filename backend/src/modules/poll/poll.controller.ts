@@ -21,7 +21,7 @@ export const pollCreateController = async (
   req: Request<{}, {}, pollCreateType>,
   res: Response,
 ) => {
-  const userId = req.cookies.userId;
+  const userId = req.user.id;
 
   if (!userId) {
     throw ApiError.badRequest("No user found");

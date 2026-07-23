@@ -16,8 +16,8 @@ function main() {
 
   app.use(cors(corsConfig));
 
-  app.all("/api/auth/*splat", toNodeHandler(auth));
   app.use(cookieParser());
+  app.all("/api/auth/*splat", toNodeHandler(auth));
   app.use(express.json());
 
   app.use("/poll", pollRoutes);

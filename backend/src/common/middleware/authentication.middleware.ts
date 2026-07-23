@@ -1,35 +1,33 @@
 import type { NextFunction, Request, Response } from "express";
+import { auth } from "../../modules/auth/auth";
 import ApiError from "../utils/api-erros";
-import { verifyToken } from "../utils/jwt-token";
-import type { UserPayload } from "../types";
 
-export const authentication = (
+export async function authentication(
   req: Request,
   res: Response,
   next: NextFunction,
-) => {
-  const authHeader = req.headers["authorization"];
+) {
+  const headers = new Headers();
 
-  if (!authHeader) {
-    throw ApiError.badRequest("Header is not defined");
+  for (const [key, value] of Object.entries(req.headers)) {
+    if (typeof value === "string") {
+      headers.set(key, value);
+    } else if (Array.isArray(value)) {
+      headers.set(key, value.join(", "));
+    }
   }
 
-  if (!authHeader.startsWith("Bearer ")) {
-    throw ApiError.badRequest("Bearer does not exist");
+  const session = await auth.api.getSession({
+    headers,
+  });
+
+  console.log("authentication session: ", session);
+
+  if (!session) {
+    throw ApiError.unauthorized("Unauthorized request");
   }
 
-  const token = authHeader.split(" ")[1];
+  req.user = session.user;
 
-  if (!token) {
-    throw ApiError.badRequest("Token does not exist");
-  }
-
-  try {
-    const payload = verifyToken(token) as UserPayload;
-    req.user = payload;
-
-    next();
-  } catch (error) {
-    throw ApiError.unauthorized("Client is not authenticated");
-  }
-};
+  next();
+}

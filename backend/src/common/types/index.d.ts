@@ -1,18 +1,21 @@
-import type { UserPayload } from "../utils/jwt-token";
 
 type Question = InferSelectModel<typeof question>;
+
 export type UserPayload = {
   id: string;
-  fullName: string;
+  createdAt: Date;
+  updatedAt: Date;
   email: string;
-  phone: string;
+  emailVerified: boolean;
+  name: string;
+  image?: string | null | undefined;
 };
 
 export declare global {
   namespace Express {
     interface Request {
       user: UserPayload;
-      questionData: Question
+      questionData: Question;
     }
   }
 }
