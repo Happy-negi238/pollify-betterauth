@@ -23,7 +23,6 @@ pollRoutes.get(
 );
 pollRoutes.post(
   "/poll-vote/:poll_code",
-  authentication,
   pollPrivate,
   controller.pollVotePostController,
 );

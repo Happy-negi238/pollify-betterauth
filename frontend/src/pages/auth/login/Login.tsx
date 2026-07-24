@@ -2,7 +2,8 @@ import { useForm } from "react-hook-form";
 import { signIn } from "@/better-auth/api";
 import { BarChart2 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 type SignInForm = {
   email: string;
@@ -11,7 +12,8 @@ type SignInForm = {
 
 const Login = () => {
 
-  // const navigation = useNavigate();
+  const navigation = useNavigate();
+  const { setSession } = useAuth()
 
   const {
     register,
@@ -35,8 +37,9 @@ const Login = () => {
         return;
       }
 
-      toast.success("User login successfully!");
-      // navigation("/log-in");
+      setSession(data.user);
+
+      navigation("/polls");
     } catch (error) {
       toast.error("Error: Creating account")
     }

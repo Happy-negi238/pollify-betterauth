@@ -21,8 +21,6 @@ export async function authentication(
     headers,
   });
 
-  console.log("authentication session: ", session);
-
   if (!session) {
     throw ApiError.unauthorized("Unauthorized request");
   }

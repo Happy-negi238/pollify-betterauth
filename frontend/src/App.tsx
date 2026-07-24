@@ -9,14 +9,23 @@ import Home from "./pages/home/Home";
 import SignUp from "./pages/auth/signup/SignUp";
 import Login from "./pages/auth/login/Login";
 import { Toaster } from "react-hot-toast";
-
+import PublicRoute from "./routes/PublicRoute";
+import Polls from "./pages/polls/Polls";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       <Route index element={<Home />} />
-      <Route path="sign-up" element={<SignUp />} />
-      <Route path="log-in" element={<Login />} />
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="polls" element={<Polls />} />
+      </Route>
+
+      <Route element={<PublicRoute />}>
+        <Route path="sign-up" element={<SignUp />} />
+        <Route path="log-in" element={<Login />} />
+      </Route>
     </Route>,
   ),
 );

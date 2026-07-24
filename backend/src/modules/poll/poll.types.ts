@@ -8,10 +8,10 @@ const answersSchema = z.object({
 const pollCreateSchema = z
   .object({
     title: z.string().max(20).min(2),
-    description: z.string().max(30).optional(),
+    description: z.string().max(50).optional(),
     visibility: z.enum(["public", "private"]),
-    expireAt: z.number().int().positive(),
-    status: z.enum(["live", "ended"]),
+    durationSeconds: z.number().int().positive(),
+    question: z.string().max(30),
     answers: z.array(answersSchema).min(2).max(6),
   })
   .refine((data) => data.answers.some((answer) => answer.isCorrect), {

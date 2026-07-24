@@ -7,10 +7,10 @@ import { answers, question } from "../../common/db/schema";
 import ApiError from "../../common/utils/api-erros";
 
 const RANDOMBYTES_LENGTH = 8;
-const BASE_URL = process.env.BASE_URL ?? "http://localhost:3000";
+const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:5173";
 
 function generateUrl(code: string) {
-  return `${BASE_URL}/${code}`;
+  return `${FRONTEND_URL}/${code}`;
 }
 
 export const pollCreateService = async (
@@ -21,17 +21,17 @@ export const pollCreateService = async (
   const POLL_CODE = crypto.randomBytes(RANDOMBYTES_LENGTH).toString("hex");
 
   const dashboardCodeUrl = generateUrl(DASHBOARD_CODE);
-  const expireAt = new Date(Date.now() + data.expireAt * 1000);
+  const expireAt = new Date(Date.now() + data.durationSeconds * 1000);
 
   try {
-    await db.transaction(async (poll) => {
+    return await db.transaction(async (poll) => {
       const [pollCreate] = await poll
         .insert(question)
         .values({
           title: data.title,
           expireAt,
           description: data.description,
-          status: data.status,
+          question: data.question,
           visibility: data.visibility,
           userId: userId,
           dashboardCode: DASHBOARD_CODE,
@@ -69,6 +69,7 @@ export const pollCreateService = async (
       };
     });
   } catch (error) {
+    console.log(error);
     throw ApiError.InternalServerError(
       "An internal error occurred while inserting question and answer",
     );

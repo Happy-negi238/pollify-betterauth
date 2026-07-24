@@ -27,14 +27,14 @@ export const pollCreateController = async (
     throw ApiError.badRequest("No user found");
   }
 
-  const { title, expireAt, status, visibility, description, answers } =
+  const { title, durationSeconds, question, visibility, description, answers } =
     req.body;
 
   const result = await service.pollCreateService(
     {
       title,
-      expireAt,
-      status,
+      durationSeconds,
+      question,
       visibility,
       description,
       answers,

@@ -41,7 +41,6 @@ const SignUp = () => {
         return;
       }
 
-      toast.success("Account created successfully!");
       navigation("/log-in");
     } catch (error) {
       toast.error("Error: Creating account")
