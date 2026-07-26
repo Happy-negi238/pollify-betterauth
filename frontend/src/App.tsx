@@ -12,6 +12,9 @@ import { Toaster } from "react-hot-toast";
 import PublicRoute from "./routes/PublicRoute";
 import Polls from "./pages/polls/Polls";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import PollDetails from "./pages/poll-details/PollDetails";
+import Dashboard from "./pages/dashboard/Dashboard";
+import PollVote from "./pages/poll-vote/PollVote";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,7 +22,10 @@ const router = createBrowserRouter(
       <Route index element={<Home />} />
 
       <Route element={<ProtectedRoute />}>
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="polls" element={<Polls />} />
+        <Route path="poll-detail/:dashboard_code" element={<PollDetails />} />
+        <Route path="vote/:poll_code" element={<PollVote />} />
       </Route>
 
       <Route element={<PublicRoute />}>

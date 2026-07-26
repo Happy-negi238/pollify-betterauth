@@ -1,3 +1,5 @@
+import type { InferSelectModel } from "drizzle-orm";
+import type { question } from "../db";
 
 type Question = InferSelectModel<typeof question>;
 

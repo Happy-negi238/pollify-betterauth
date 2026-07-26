@@ -39,7 +39,7 @@ const Login = () => {
 
       setSession(data.user);
 
-      navigation("/polls");
+      navigation("/dashboard");
     } catch (error) {
       toast.error("Error: Creating account")
     }

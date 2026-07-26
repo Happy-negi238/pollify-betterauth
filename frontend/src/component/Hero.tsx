@@ -2,7 +2,7 @@ import { BarChart2 } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="bg-slate-50" id="home">
+    <section className="bg-slate-50">
       <div className="mx-auto grid min-h-[calc(100vh-64px)] max-w-7xl items-center gap-16 px-6 py-16 lg:grid-cols-2">
         {/* Left */}
         <div className="max-w-xl">

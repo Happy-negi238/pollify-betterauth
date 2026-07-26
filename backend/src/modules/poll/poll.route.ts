@@ -11,13 +11,12 @@ pollRoutes.post(
   controller.pollCreateController,
 );
 pollRoutes.get(
-  "/created-poll/:dashboard_code",
+  "/poll-detail/:dashboard_code",
   authentication,
-  controller.createdPollController,
+  controller.pollDetailController,
 );
 pollRoutes.get(
   "/poll-vote/:poll_code",
-  authentication,
   pollPrivate,
   controller.pollVoteGetController,
 );
@@ -26,3 +25,4 @@ pollRoutes.post(
   pollPrivate,
   controller.pollVotePostController,
 );
+pollRoutes.get("/dashboard", authentication, controller.dashboardController);

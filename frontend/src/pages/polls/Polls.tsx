@@ -3,6 +3,7 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Trash2, Plus, Users, Lock } from "lucide-react";
 import type { PollFormValues, Visibility } from "./types";
 import { createPoll } from "@/better-auth/api";
+import { useNavigate } from "react-router-dom";
 
 // ---------------------
 // Static config
@@ -38,6 +39,9 @@ const MAX_ANSWERS = 10;
 // -------------------------------
 
 export function Polls() {
+
+  const navigate = useNavigate();
+
   const [submitted, setSubmitted] = useState<PollFormValues | null>(null);
 
   const {
@@ -86,13 +90,18 @@ export function Polls() {
     return dupes;
   })();
 
-  const onSubmit = async (data: PollFormValues) => {
+  const onSubmit = async (formValue: PollFormValues) => {
     if (duplicateIndexes.size > 0) return;
-    console.log("Data: ", data);
+    console.log("formValue: ", formValue);
 
-    await createPoll(data);
+    const response = await createPoll(formValue);
+    const { data } = response;
+    console.log(data.data);
+    console.log(data.data.dashboardCode);
 
-    setSubmitted(data);
+    navigate(`/poll-detail/${data.data.dashboardCode}`);
+
+    setSubmitted(formValue);
   };
 
   const selectCorrectAnswer = (index: number) => {

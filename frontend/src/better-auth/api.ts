@@ -2,8 +2,14 @@ import { authClient } from "./auth-client";
 import { api } from "./axios";
 
 import type { PollFormValues } from "@/pages/polls/types";
-import type { LoginInType, SignUpType } from "./types";
-
+import type {
+  DashboardResponseType,
+  LoginInType,
+  PollDetailResponseType,
+  PollVoteResponseType,
+  QuestionAnswerResponseType,
+  SignUpType,
+} from "./types";
 
 export const signUp = async (data: SignUpType) => {
   const response = await authClient.signUp.email({
@@ -54,5 +60,49 @@ export const authentication = async () => {
 export const createPoll = async (payload: PollFormValues) => {
   const response = await api.post("/poll/poll-create", payload);
 
-  console.log(response);
-}
+  const { data } = response;
+  return { data };
+};
+
+export const getPollDetail = async (
+  dashboardCode: string,
+): Promise<PollDetailResponseType> => {
+  const response = await api.get<PollDetailResponseType>(
+    `/poll/poll-detail/${dashboardCode}`,
+  );
+
+  const { data, message } = response.data;
+  return { data, message };
+};
+
+export const dashboard = async (): Promise<DashboardResponseType> => {
+  const response = await api.get("/poll/dashboard");
+
+  const { data, message } = response.data;
+  return { data, message };
+};
+
+export const pollVoteGet = async (
+  pollCode: string,
+): Promise<QuestionAnswerResponseType> => {
+  const response = await api.get<QuestionAnswerResponseType>(
+    `/poll/poll-vote/${pollCode}`,
+  );
+
+  const { message, data } = response.data;
+  return { data, message };
+};
+
+export const pollVotePost = async (
+  pollCode: string,
+  answerId: string,
+): Promise<PollVoteResponseType> => {
+  const response = await api.post<PollVoteResponseType>(
+    `/poll/poll-vote/${pollCode}`,
+    {
+      answerId,
+    },
+  );
+  const { data, message } = response.data;
+  return { data, message };
+};

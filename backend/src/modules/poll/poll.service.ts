@@ -1,10 +1,11 @@
 import crypto from "node:crypto";
-import { eq, sql } from "drizzle-orm";
+import { desc, eq, sql } from "drizzle-orm";
 
 import type { pollCreateType } from "./poll.types";
 import { db } from "../../index";
 import { answers, question } from "../../common/db/schema";
 import ApiError from "../../common/utils/api-erros";
+import { user } from "../../common/db";
 
 const RANDOMBYTES_LENGTH = 8;
 const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:5173";
@@ -65,18 +66,18 @@ export const pollCreateService = async (
       return {
         success: true,
         pollCreateId: pollCreate.id,
-        url: dashboardCodeUrl,
+        dashboardCode: pollCreate.dashboardCode,
       };
     });
   } catch (error) {
-    console.log(error);
     throw ApiError.InternalServerError(
       "An internal error occurred while inserting question and answer",
     );
   }
 };
 
-export const createdPollService = async (dashboardCode: string) => {
+export const pollDetailService = async (dashboardCode: string) => {
+
   const [result] = await db
     .select({
       id: question.id,
@@ -93,11 +94,7 @@ export const createdPollService = async (dashboardCode: string) => {
     throw ApiError.badRequest("An error occour to finding poll");
   }
 
-  const POLL_CODE = result.pollCode;
-
-  const pollUrl = generateUrl(POLL_CODE);
-
-  return { success: true, url: pollUrl, visibility: result.visibility };
+  return { result };
 };
 
 export const pollVoteGetService = async (questionData: {
@@ -106,6 +103,7 @@ export const pollVoteGetService = async (questionData: {
   description: string | null;
   visibility: string;
   status: "live" | "ended";
+  question: string;
 }) => {
   // const [questionData] = await db
   //   .select()
@@ -139,12 +137,12 @@ export const pollVoteGetService = async (questionData: {
   }
 
   return {
-    success: true,
     question: {
       title: questionData.title,
       description: questionData.description,
       visibility: questionData.visibility,
       status: questionData.status,
+      question: questionData.question,
     },
 
     answers: answerData,
@@ -174,4 +172,21 @@ export const pollVotePostService = async (
   } catch (error) {
     throw ApiError.InternalServerError("Error to count vote");
   }
+};
+
+export const dashboardService = async (id: string) => {
+  const [userDetail] = await db.select().from(user).where(eq(user.id, id));
+
+  if (!userDetail) {
+    throw ApiError.unauthorized("User not found");
+  }
+
+  const pollDetail = await db
+    .select()
+    .from(question)
+    .where(eq(question.userId, id))
+    .orderBy(desc(question.createdAt));
+
+  const result = pollDetail.length > 0 ? pollDetail : null;
+  return { result };
 };

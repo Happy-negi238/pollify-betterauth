@@ -42,10 +42,10 @@ export const pollCreateController = async (
     userId,
   );
 
-  return ApiResponse.ok(res, 201, result, "Poll created successfully!");
+  ApiResponse.ok(res, 201, result, "Poll created successfully!");
 };
 
-export const createdPollController = async (
+export const pollDetailController = async (
   req: Request<DashboardParams>,
   res: Response,
 ) => {
@@ -53,13 +53,14 @@ export const createdPollController = async (
 
   verifyCode(dashboard_code, "Unauthorized request");
 
-  const result = service.createdPollService(dashboard_code);
+  const response = await service.pollDetailService(dashboard_code);
+  const { result } = response;
 
-  return ApiResponse.ok(res, 200, result, "Poll url created");
+  ApiResponse.ok(res, 200, result, "Poll detail fetch successfully");
 };
 
 export const pollVoteGetController = async (req: Request, res: Response) => {
-  const { id, title, description, visibility, status } = req.questionData;
+  const { id, title, description, visibility, status,question } = req.questionData;
 
   const result = await service.pollVoteGetService({
     id,
@@ -67,6 +68,7 @@ export const pollVoteGetController = async (req: Request, res: Response) => {
     description,
     visibility,
     status,
+    question
   });
 
   ApiResponse.ok(res, 200, result, "Fetch successfully questions and answer");
@@ -77,9 +79,18 @@ export const pollVotePostController = async (req: Request, res: Response) => {
   const body: { answerId: string } | null = req.body;
 
   if (!body) {
-    throw ApiError.badRequest("Data is not found");
+    throw ApiError.badRequest("Id is not found");
   }
 
   const result = await service.pollVotePostService(id, body);
   ApiResponse.ok(res, 200, result, "Count updated successfully");
+};
+
+export const dashboardController = async (req: Request, res: Response) => {
+  const { id }: { id: string } = req.user;
+
+  verifyCode(id, "Unauthorized request");
+
+  const response = await service.dashboardService(id);
+  ApiResponse.ok(res, 200, response, "Data found successfully");
 };

@@ -2,15 +2,14 @@ import type { NextFunction, Request, Response } from "express";
 import { verifyCode } from "./poll.controller";
 
 import ApiError from "../../common/utils/api-erros";
-import { verifyToken } from "../../common/utils/jwt-token";
 import { question } from "../../common/db/schema";
 import { eq } from "drizzle-orm";
 import { db } from "../..";
-import type { UserPayload } from "../../common/types";
+import { getSession } from "../../common/middleware/authentication.middleware";
 
 export type PollParams = {
   poll_code: string;
-}
+};
 
 export const pollPrivate = async (
   req: Request<PollParams>,
@@ -35,29 +34,14 @@ export const pollPrivate = async (
   }
 
   if (questionData.visibility === "private") {
-    const authHeader = req.headers["authorization"];
-
-    if (!authHeader) {
-      throw ApiError.badRequest("Header is not defined");
+    const session = await getSession(req);
+    
+    if (!session) {
+      throw ApiError.unauthorized("Unauthorized request");
     }
 
-    if (!authHeader.startsWith("Bearer ")) {
-      throw ApiError.badRequest("Bearer does not exist");
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    if (!token) {
-      throw ApiError.badRequest("Token does not exist");
-    }
-
-    try {
-      verifyToken(token) as UserPayload;
-      req.questionData = questionData;
-      next();
-    } catch (error) {
-      throw ApiError.unauthorized("Client is not authenticated");
-    }
+    req.questionData = questionData;
+    next();
   } else {
     req.questionData = questionData;
     next();
