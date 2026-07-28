@@ -1,5 +1,5 @@
 import { getPollDetail } from "@/better-auth/api"
-import type { PollDetailType } from "@/better-auth/types";
+import type { PollAnswer, PollDetailType } from "@/better-auth/types";
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import {
@@ -14,7 +14,10 @@ import {
     PlusIcon,
 } from "lucide-react";
 import QRCode from "react-qr-code";
+import { socket } from "@/socket";
+
 import NotFound from "./NotFound";
+import PollChart from "@/component/Poll-chart";
 
 // A lightweight, deterministic "QR-like" placeholder pattern so the panel
 // doesn't need an external QR library. Swap for a real QR generator later.
@@ -112,7 +115,7 @@ function SharePollCard({ poll }: { poll: PollDetailType }) {
                             { value: "link", label: "Link" },
                             { value: "qr", label: "QR Code" },
                         ].map((option) => (
-                            <>
+                            <div key={option.value}>
                                 <button
                                     key={option.value}
                                     onClick={() => setTab(option.value as "link" | "qr")}
@@ -122,7 +125,7 @@ function SharePollCard({ poll }: { poll: PollDetailType }) {
                                     {option.value === "qr" && <QrCode className="h-4 w-4 mr-1" />}
                                     {option.label}
                                 </button>
-                            </>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -146,31 +149,6 @@ function SharePollCard({ poll }: { poll: PollDetailType }) {
                         </button>
                     </div>
                 )}
-            </div>
-        </section>
-    );
-}
-
-function AnalyticsCard() {
-    return (
-        <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                    <div className="flex gap-4">
-                        <div>
-                            <p className="text-lg font-medium text-slate-500">Total Responses</p>
-                            <p className=" text-2xl font-semibold text-slate-900">0</p>
-                        </div>
-                    </div>
-                    <span className="inline-flex items-center rounded-lg bg-transparent px-3 
-                    py-1 text-sm font-semibold text-green-500 border border-green-500">
-                        Live
-                    </span>
-                </div>
-
-                <div className="rounded-xl border border-slate-200 bg-slate-50 p-2">
-                    <div className="h-48 rounded-xl bg-white shadow-sm" />
-                </div>
             </div>
         </section>
     );
@@ -226,6 +204,7 @@ const PollDetails = () => {
     const [pollData, setPollData] = useState<PollDetailType | null>(null);
     const [loading, setLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
+    // const [answer, setAnswer] = useState<PollAnswer | null>(null);
 
     useEffect(() => {
         if (!dashboardCode) {
@@ -253,6 +232,34 @@ const PollDetails = () => {
         };
 
         checkDashboardCode();
+
+        socket.connect();
+        socket.on("server:poll:updated", (poll) => {
+            console.log("Previous Poll Data:", pollData);
+            console.log("Updated Answer:", poll);
+
+            const updateAnswer = poll.updatedAnswer as PollAnswer;
+
+            setPollData((prev) => {
+                console.log("prev: ", prev)
+                if (!prev) return prev;
+
+                return {
+                    ...prev,
+                    answers: prev.answers.map((answer) =>
+                        answer.id === updateAnswer.id
+                            ? updateAnswer
+                            : answer
+                    ),
+                }
+            })
+        });
+
+        return () => {
+            socket.off("server:poll:updated");
+            socket.disconnect();
+        };
+
     }, [dashboardCode]);
 
 
@@ -285,7 +292,7 @@ const PollDetails = () => {
                 </div>
 
                 <div className="mt-6">
-                    <AnalyticsCard />
+                    <PollChart answer={pollData.answers} />
                 </div>
             </div>
         </div>

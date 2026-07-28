@@ -39,9 +39,9 @@ const PollVote = () => {
 
         const response = await pollVotePost(pollCode, votePayload.answerId);
         const { data } = response;
-        
-        console.log(data.data.id)
-        console.log(data.data.votes)
+        console.log(data);
+        // console.log(data.data.id)
+        // console.log(data.data.votes)
     };
 
     const selected = watch("answerId");
@@ -55,7 +55,7 @@ const PollVote = () => {
     }
 
     return (
-        <section className="mx-auto flex min-h-[85vh] max-w-2xl items-center px-5 py-10">
+        <section className="mx-auto flex min-h-[85vh] max-w-xl items-center px-5 py-10">
             <div className="w-full rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
 
                 <div className="mb-8 space-y-2">

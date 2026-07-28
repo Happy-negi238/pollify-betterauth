@@ -6,6 +6,7 @@ import { db } from "../../index";
 import { answers, question } from "../../common/db/schema";
 import ApiError from "../../common/utils/api-erros";
 import { user } from "../../common/db";
+import { getIO } from "../../common/socket";
 
 const RANDOMBYTES_LENGTH = 8;
 const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:5173";
@@ -63,6 +64,10 @@ export const pollCreateService = async (
         );
       }
 
+      const io = getIO();
+
+      io.emit("server:poll:created", { id: pollCreate.id });
+
       return {
         success: true,
         pollCreateId: pollCreate.id,
@@ -77,7 +82,6 @@ export const pollCreateService = async (
 };
 
 export const pollDetailService = async (dashboardCode: string) => {
-
   const [result] = await db
     .select({
       id: question.id,
@@ -94,7 +98,30 @@ export const pollDetailService = async (dashboardCode: string) => {
     throw ApiError.badRequest("An error occour to finding poll");
   }
 
-  return { result };
+  const answerData = await db
+    .select({
+      id: answers.id,
+      title: answers.title,
+      votes: answers.votes,
+    })
+    .from(answers)
+    .where(eq(answers.questionId, result.id));
+
+  if (answerData.length < 1) {
+    throw ApiError.badRequest("Unable to fetch the answers");
+  }
+
+  const pollData = {
+    id: result.id,
+    pollCode: result.pollCode,
+    duration: result.duration,
+    title: result.title,
+    description: result.description,
+    visibility: result.visibility,
+    answers: answerData,
+  };
+
+  return { result: pollData };
 };
 
 export const pollVoteGetService = async (questionData: {
@@ -150,11 +177,12 @@ export const pollVoteGetService = async (questionData: {
 };
 
 export const pollVotePostService = async (
-  pollCode: string,
+  id: string,
   body: { answerId: string },
 ) => {
   try {
     const answerId = body.answerId;
+
     const [updateVote] = await db
       .update(answers)
       .set({ votes: sql`${answers.votes} + 1` })
@@ -162,11 +190,20 @@ export const pollVotePostService = async (
       .returning({
         id: answers.id,
         votes: answers.votes,
+        title: answers.title,
       });
 
     if (!updateVote) {
       throw ApiError.badRequest("Unauthorized vote count");
     }
+
+    const io = getIO();
+    console.log("updated");
+    // console.log("io: ", io);
+
+    io.emit("server:poll:updated", {
+      updatedAnswer: updateVote,
+    });
 
     return { id: updateVote.id, votes: updateVote.votes };
   } catch (error) {

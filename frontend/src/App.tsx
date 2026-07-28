@@ -25,8 +25,8 @@ const router = createBrowserRouter(
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="polls" element={<Polls />} />
         <Route path="poll-detail/:dashboard_code" element={<PollDetails />} />
-        <Route path="vote/:poll_code" element={<PollVote />} />
       </Route>
+      <Route path="vote/:poll_code" element={<PollVote />} />
 
       <Route element={<PublicRoute />}>
         <Route path="sign-up" element={<SignUp />} />

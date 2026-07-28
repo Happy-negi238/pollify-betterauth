@@ -18,6 +18,11 @@ export const socketIntializer = (server: HttpServer) => {
 
   io.on("connection", (socket) => {
     console.log(`Socket id: ${socket.id}`);
+
+    socket.on("disconnect", (data) => {
+      console.log("Socket disconnect: ", socket.id);
+      console.log(data);
+    });
   });
 
   return io;

@@ -92,7 +92,7 @@ export function Polls() {
 
   const onSubmit = async (formValue: PollFormValues) => {
     if (duplicateIndexes.size > 0) return;
-    console.log("formValue: ", formValue);
+    // console.log("formValue: ", formValue);
 
     const response = await createPoll(formValue);
     const { data } = response;

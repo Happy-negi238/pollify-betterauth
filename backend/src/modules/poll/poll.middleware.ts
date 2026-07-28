@@ -29,13 +29,21 @@ export const pollPrivate = async (
     throw ApiError.InternalServerError("Error to getting poll");
   }
 
-  if (questionData.expireAt < new Date() || questionData.status === "ended") {
+  if (questionData.status === "ended") {
+    throw ApiError.badRequest("Poll is expired");
+  }
+
+  if (questionData.expireAt < new Date()) {
+    await db
+      .update(question)
+      .set({ status: "ended" })
+      .where(eq(question.pollCode, poll_code));
     throw ApiError.badRequest("Poll is expired");
   }
 
   if (questionData.visibility === "private") {
     const session = await getSession(req);
-    
+
     if (!session) {
       throw ApiError.unauthorized("Unauthorized request");
     }

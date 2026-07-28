@@ -12,9 +12,8 @@ function main() {
   const app = express();
   const server = createServer(app);
 
-  socketIntializer(server);
-
   app.use(cors(corsConfig));
+  socketIntializer(server);
 
   app.use(cookieParser());
   app.all("/api/auth/*splat", toNodeHandler(auth));

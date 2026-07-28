@@ -11,6 +11,12 @@ export type LoginInType = {
 
 export type PollVisibility = "public" | "private";
 
+export type PollAnswer = {
+  id: string;
+  title: string;
+  votes: number;
+};
+
 export type PollDetailType = {
   id: string;
   pollCode: string;
@@ -18,6 +24,11 @@ export type PollDetailType = {
   title: string;
   description: string;
   visibility: PollVisibility;
+  answers: PollAnswer[];
+};
+
+export type PollChartProps = {
+  answer: PollAnswer[];
 };
 
 export type PollDetailResponseType = {
@@ -78,8 +89,6 @@ export type PollVoteType = {
 };
 
 export type PollVoteResponseType = {
-  data: {
-    data: PollVoteType;
-  };
+  data: PollVoteType;
   message: string;
 };
