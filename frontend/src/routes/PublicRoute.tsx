@@ -1,11 +1,12 @@
 import { useAuth } from "@/context/AuthContext";
+import Loader from "@/loader";
 import { Navigate, Outlet } from "react-router-dom";
 
 const PublicRoute = () => {
     const { session, loading } = useAuth();
 
     if (loading) {
-        return <div className="">Loading..</div>
+        return <Loader />
     }
 
     if (session) {

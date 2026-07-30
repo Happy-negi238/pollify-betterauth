@@ -1,13 +1,16 @@
 import Header from './pages/header/Header'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 import Footer from './pages/footer/Footer'
 
 const Layout = () => {
+    const { pathname } = useLocation();
+
+    const hideComponent = pathname.startsWith("/vote");
     return (
         <>
-            <Header />
+            {!hideComponent && <Header />}
             <Outlet />
-            <Footer />
+            {!hideComponent && <Footer />}
         </>
     )
 }

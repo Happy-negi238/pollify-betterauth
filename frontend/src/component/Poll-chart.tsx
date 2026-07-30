@@ -32,10 +32,6 @@ const PollChart = ({ answer }: PollChartProps) => {
                             <p className=" text-2xl font-semibold text-slate-900">{totalVotes}</p>
                         </div>
                     </div>
-                    <span className="inline-flex items-center rounded-lg bg-transparent px-3 
-                    py-1 text-sm font-semibold text-green-500 border border-green-500">
-                        Live
-                    </span>
                 </div>
 
                 <div className="rounded-xl border border-slate-200 bg-slate-50 p-2">

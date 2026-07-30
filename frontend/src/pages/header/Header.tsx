@@ -1,9 +1,12 @@
 import { useAuth } from "@/context/AuthContext";
-import { BarChart2, User2Icon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { BarChart2, Plus, User2Icon } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = () => {
-  const { session } = useAuth()
+  const { session } = useAuth();
+  const location = useLocation();
+  const showCreateButton = session && location.pathname === "/";
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-slate-50/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
@@ -17,14 +20,25 @@ const Header = () => {
 
         {session ?
           (
-            <Link to={"/dashboard"}>
-              <button
-                className="rounded-lg cursor-pointer px-4 py-2 text-sm font-semibold text-neutral-800
-              border border-neutral-500/20 shadow/5 hover:shadow/10 flex items-center justify-center gap-1"
-              >
-                <User2Icon size={17} />  <span>Dashboard</span>
-              </button>
-            </Link>
+            <div className="flex items-center gap-3">
+              {showCreateButton && (
+                <Link to={"/polls"}>
+                  <button className="flex items-center gap-1 rounded-lg bg-black px-4 py-2 text-sm 
+                font-semibold text-white shadow-[inset_0_0_8px_rgba(255,255,255,1)]">
+                    <Plus size={17} /> <span>Create Poll</span>
+                  </button>
+                </Link>
+              )}
+
+              <Link to={"/dashboard"}>
+                <button
+                  className="rounded-lg cursor-pointer px-4 py-2 text-sm font-semibold text-neutral-800
+                border border-neutral-500/20 shadow/5 hover:shadow/10 flex items-center justify-center gap-1"
+                >
+                  <User2Icon size={17} />  <span>Dashboard</span>
+                </button>
+              </Link>
+            </div>
           ) :
           (
             <div className="flex gap-3">

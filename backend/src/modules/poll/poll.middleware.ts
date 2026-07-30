@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { verifyCode } from "./poll.controller";
+import { isExist } from "./poll.controller";
 
 import ApiError from "../../common/utils/api-erros";
 import { question } from "../../common/db/schema";
@@ -18,8 +18,7 @@ export const pollPrivate = async (
 ) => {
   const { poll_code } = req.params;
 
-  verifyCode(poll_code, "Unauthorized poll code");
-
+  isExist(poll_code, "Unauthorized poll code");
   const [questionData] = await db
     .select()
     .from(question)
@@ -30,7 +29,7 @@ export const pollPrivate = async (
   }
 
   if (questionData.status === "ended") {
-    throw ApiError.badRequest("Poll is expired");
+    throw ApiError.gone("Poll is expired");
   }
 
   if (questionData.expireAt < new Date()) {
@@ -38,7 +37,7 @@ export const pollPrivate = async (
       .update(question)
       .set({ status: "ended" })
       .where(eq(question.pollCode, poll_code));
-    throw ApiError.badRequest("Poll is expired");
+    throw ApiError.gone("Poll is expired");
   }
 
   if (questionData.visibility === "private") {

@@ -1,7 +1,7 @@
-import { getPollDetail } from "@/better-auth/api"
+import { deleteQuestion, getPollDetail } from "@/better-auth/api"
 import type { PollAnswer, PollDetailType } from "@/better-auth/types";
 import { useEffect, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import {
     Clock3,
     Globe,
@@ -18,6 +18,10 @@ import { socket } from "@/socket";
 
 import NotFound from "./NotFound";
 import PollChart from "@/component/Poll-chart";
+import toast from "react-hot-toast";
+import Loader from "@/loader";
+
+
 
 // A lightweight, deterministic "QR-like" placeholder pattern so the panel
 // doesn't need an external QR library. Swap for a real QR generator later.
@@ -154,7 +158,12 @@ function SharePollCard({ poll }: { poll: PollDetailType }) {
     );
 }
 
-function Header({ title }: { title: string }) {
+function Header({ title, duration, questionId, isDeleting, onDelete }
+    :
+    { title: string; duration: string | Date; questionId: string; isDeleting: boolean; onDelete: (questionId: string) => void }) {
+
+    const isActive = new Date(duration) > new Date();
+
     return (
         <header className="mb-8">
             <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
@@ -163,9 +172,13 @@ function Header({ title }: { title: string }) {
                         <div>
                             <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                                 <h1 className="text-3xl font-semibold text-slate-900">{title}</h1>
-                                <span className="flex rounded-md bg-transparent border border-green-500
-                                 px-2 py-0.5 text-xs font-md text-green-500">
-                                    Active
+                                <span
+                                    className={`flex rounded-md border px-2 py-0.5 text-xs font-medium ${isActive
+                                        ? "border-green-500 text-green-500"
+                                        : "border-red-500 text-red-500"
+                                        }`}
+                                >
+                                    {isActive ? "Active" : "Ended"}
                                 </span>
                             </div>
                         </div>
@@ -186,8 +199,20 @@ function Header({ title }: { title: string }) {
                                 <ChartColumn className="h-4 w-4" strokeWidth={2} />
                                 Publish Results
                             </button>
-                            <button className="inline-flex items-center justify-center rounded-2xl border border-red-400 bg-white p-2 text-slate-700 shadow-sm transition hover:bg-slate-50">
-                                <Trash2 className="h-4 w-4 text-red-400" strokeWidth={2} />
+                            <button
+                                onClick={() => onDelete(questionId)}
+                                disabled={isDeleting}
+                                className={`inline-flex items-center justify-center rounded-2xl border 
+                                    border-red-400 bg-white p-2 text-slate-700 shadow-sm transition 
+                                    ${isDeleting ? "opacity-70" : "hover:bg-slate-50"}`}
+                            >
+                                {isDeleting ? (
+                                    <span className="inline-flex h-4 w-4 items-center justify-center 
+                                    rounded-full border-2 border-current border-t-transparent text-red-400 animate-spin"
+                                    />
+                                ) : (
+                                    <Trash2 className="h-4 w-4 text-red-400" strokeWidth={2} />
+                                )}
                             </button>
                         </div>
                     </div>
@@ -204,7 +229,24 @@ const PollDetails = () => {
     const [pollData, setPollData] = useState<PollDetailType | null>(null);
     const [loading, setLoading] = useState(true);
     const [notFound, setNotFound] = useState(false);
-    // const [answer, setAnswer] = useState<PollAnswer | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const navigation = useNavigate();
+
+    const handleDelete = async (questionId: string) => {
+        if (!questionId) return;
+
+        const confirmed = window.confirm("Are you sure you want to delete this poll?");
+        if (!confirmed) return;
+
+        const response = await deleteQuestion(questionId);
+        const { message } = response;
+        toast.success(message);
+
+        navigation("/dashboard")
+
+        setIsDeleting(true);
+    };
 
     useEffect(() => {
         if (!dashboardCode) {
@@ -264,9 +306,8 @@ const PollDetails = () => {
 
 
     if (loading) {
-        return (
-            <div>Loading...</div>
-        );
+        return <Loader />
+
     }
 
     if (notFound) {
@@ -280,7 +321,13 @@ const PollDetails = () => {
     return (
         <div className="min-h-screen w-full bg-slate-50">
             <div className="mx-auto w-full max-w-4xl px-5 sm:px-8 py-6">
-                <Header title={pollData.title} />
+                <Header
+                    title={pollData.title}
+                    duration={pollData.duration}
+                    questionId={pollData.id}
+                    isDeleting={isDeleting}
+                    onDelete={handleDelete}
+                />
 
                 <div className="flex flex-col gap-6 items-start">
                     <div className="w-full">

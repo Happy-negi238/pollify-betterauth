@@ -77,6 +77,7 @@ export type AnswersType = {
 
 export type QuestionAnswerResponseType = {
   data: {
+    alreadyVote: boolean
     question: QuestionType;
     answers: AnswersType;
   };

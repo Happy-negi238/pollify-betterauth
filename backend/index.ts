@@ -7,6 +7,7 @@ import { pollRoutes } from "./src/modules/poll/poll.route";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./src/modules/auth/auth";
 import { corsConfig, socketIntializer } from "./src/common/socket";
+import { errorHandler } from "./src/common/utils/error-handler";
 
 function main() {
   const app = express();
@@ -24,6 +25,8 @@ function main() {
   app.get("/health", (req, res) => {
     res.json({ ok: true });
   });
+
+  app.use(errorHandler);
 
   server.listen(3000, () => {
     console.log(`Server is running on http://localhost:3000`);

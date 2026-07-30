@@ -4,12 +4,14 @@ import {
   CalendarDays,
   Globe,
   Lock,
+  Loader2,
   Plus,
   ExternalLink,
   PlusIcon,
   PowerIcon,
+  Trash2,
 } from "lucide-react";
-import { dashboard, signOut } from "@/better-auth/api";
+import { dashboard, deleteQuestion, signOut } from "@/better-auth/api";
 import type { DashboardType } from "@/better-auth/types";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
@@ -19,6 +21,7 @@ const Dashboard = () => {
   const { setSession } = useAuth();
 
   const [polls, setPolls] = useState<DashboardType>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     const dashboardDetailHandler = async () => {
@@ -45,9 +48,27 @@ const Dashboard = () => {
     setSession(null);
   }
 
+  const deleteHandler = async (id: string) => {
+    if (deletingId) return;
+
+    setDeletingId(id);
+
+    try {
+      const response = await deleteQuestion(id);
+      const { message } = response;
+
+      toast.success(message);
+      setPolls((prev) => (prev ? prev.filter((question) => question.id !== id) : prev));
+    } catch {
+      toast.error("Failed to delete poll");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   if (!polls?.length) {
     return (
-      <div className="mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-6 text-center">
+      <div className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">
           No polls found
         </h1>
@@ -68,7 +89,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="bg-slate-50">
+    <div className="bg-slate-50 min-h-screen">
       <div className="mx-auto max-w-5xl px-5 py-8">
         <div className="mb-8 flex items-start justify-between">
           <div className="">
@@ -104,35 +125,52 @@ const Dashboard = () => {
           {polls.map((poll) => (
             <div
               key={poll.id}
-              onClick={() =>
-                navigate(`/poll-detail/${poll.dashboardCode}`)
-              }
-              className="group rounded-xl border border-neutral-500/30 shadow-sm
-               bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-neutral-500/40"
+              className="rounded-xl border border-neutral-500/30 shadow-sm
+               bg-white p-4 transition-all hover:border-neutral-500/40"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">
-                    {poll.title}
-                  </h2>
+                  <div className=" flex gap-2 items-center">
+                    <h2 className="text-lg font-semibold">
+                      {poll.title}
+                    </h2>
+                    <div
+                      className={`rounded px-2 py-0.5 text-xs font-medium ${poll.status === "live"
+                        ? "bg-green-100 text-green-700 border border-green-300/40"
+                        : "bg-red-100 text-red-700 border border-red-300"
+                        }`}
+                    >
+                      {poll.status}
+                    </div>
+                  </div>
 
-                  <p className="mt-1 line-clamp-2 text-sm text-neutral-500 text-muted-foreground">
+                  <p className="mt-1 line-clamp-2 text-sm text-neutral-400">
                     {poll.description || "No description"}
                   </p>
                 </div>
 
-                <div
-                  className={`rounded-full px-3 py-1 text-xs font-medium ${poll.status === "live"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-gray-200 text-gray-700"
-                    }`}
+                <button
+                  type="button"
+                  onClick={() => deleteHandler(poll.id)}
+                  disabled={deletingId === poll.id}
+                  className="group flex items-center rounded px-1 py-1 transition hover:bg-red-400/20 
+                  disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {poll.status}
-                </div>
+                  {deletingId === poll.id ? (
+                    <Loader2 size={16} className="animate-spin text-red-500" />
+                  ) : (
+                    <Trash2
+                      strokeWidth={2}
+                      size={16}
+                      className="text-slate-600 transition duration-100 group-hover:text-red-500/80"
+                    />
+                  )}
+                </button>
               </div>
 
               <div className="mt-5 flex flex-wrap items-center justify-between gap-5 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-0.5 text-blue-600/70 hover:text-blue-600 transition-all ease-in-out
+                 duration-100 font-medium">
                   {poll.visibility === "public" ? (
                     <Globe size={14} />
                   ) : (
@@ -142,13 +180,14 @@ const Dashboard = () => {
                   {poll.visibility.charAt(0).toUpperCase() + poll.visibility.slice(1)}
                 </div>
 
-                <div className="flex items-center gap-1 ">
+                <div className="flex items-center gap-1 text-orange-500/80 transition-all ease-in-out
+                 duration-100 font-medium">
                   <CalendarDays size={14} />
                   {new Date(poll.createdAt).toLocaleDateString()}
                 </div>
 
-                <Link to={`poll-details/${poll.dashboardCode}`}>
-                  <div className="flex items-center gap-1">
+                <Link to={`/poll-details/${poll.dashboardCode}`}>
+                  <div className="flex items-center gap-1 font-medium">
                     <ExternalLink size={14} />
                     Link
                   </div>

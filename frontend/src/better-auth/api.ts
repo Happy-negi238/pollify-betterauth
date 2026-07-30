@@ -84,9 +84,14 @@ export const dashboard = async (): Promise<DashboardResponseType> => {
 
 export const pollVoteGet = async (
   pollCode: string,
+  fingerPrintId: string,
 ): Promise<QuestionAnswerResponseType> => {
+  console.log("finger print id frontend: ", fingerPrintId);
   const response = await api.get<QuestionAnswerResponseType>(
     `/poll/poll-vote/${pollCode}`,
+    {
+      params: { fingerPrintId },
+    },
   );
 
   const { message, data } = response.data;
@@ -96,13 +101,21 @@ export const pollVoteGet = async (
 export const pollVotePost = async (
   pollCode: string,
   answerId: string,
+  fingerPrintId: string,
 ): Promise<PollVoteResponseType> => {
   const response = await api.post<PollVoteResponseType>(
     `/poll/poll-vote/${pollCode}`,
     {
       answerId,
+      fingerPrintId,
     },
   );
+  const { data, message } = response.data;
+  return { data, message };
+};
+
+export const deleteQuestion = async (id: string) => {
+  const response = await api.delete("poll/delete", { data: { id } });
   const { data, message } = response.data;
   return { data, message };
 };

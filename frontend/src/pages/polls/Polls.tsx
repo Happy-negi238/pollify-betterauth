@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { Trash2, Plus, Users, Lock } from "lucide-react";
+import { Trash2, Plus, Users, Lock, Loader2 } from "lucide-react";
 import type { PollFormValues, Visibility } from "./types";
 import { createPoll } from "@/better-auth/api";
 import { useNavigate } from "react-router-dom";
@@ -43,6 +43,7 @@ export function Polls() {
   const navigate = useNavigate();
 
   const [submitted, setSubmitted] = useState<PollFormValues | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -92,16 +93,17 @@ export function Polls() {
 
   const onSubmit = async (formValue: PollFormValues) => {
     if (duplicateIndexes.size > 0) return;
-    // console.log("formValue: ", formValue);
+    setIsSubmitting(true);
 
-    const response = await createPoll(formValue);
-    const { data } = response;
-    console.log(data.data);
-    console.log(data.data.dashboardCode);
+    try {
+      const response = await createPoll(formValue);
+      const { data } = response;
 
-    navigate(`/poll-detail/${data.data.dashboardCode}`);
-
-    setSubmitted(formValue);
+      navigate(`/poll-detail/${data.data.dashboardCode}`);
+      setSubmitted(formValue);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const selectCorrectAnswer = (index: number) => {
@@ -463,9 +465,19 @@ export function Polls() {
             </button>
             <button
               type="submit"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              disabled={isSubmitting}
+              className={`inline-flex items-center justify-center rounded-lg 
+                h-9 w-24 text-sm font-medium text-white transition 
+                ${isSubmitting ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
             >
-              Create Poll
+              {isSubmitting ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 className="h-9 w-24 animate-spin" />
+                  
+                </span>
+              ) : (
+                "Create Poll"
+              )}
             </button>
           </div>
         </form>

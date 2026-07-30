@@ -9,7 +9,7 @@ type DashboardParams = {
   dashboard_code: string;
 };
 
-export function verifyCode(code: string | undefined, message: string) {
+export function isExist(code: string | undefined, message: string) {
   if (!code) {
     throw ApiError.unauthorized(message);
   }
@@ -51,7 +51,7 @@ export const pollDetailController = async (
 ) => {
   const { dashboard_code } = req.params;
 
-  verifyCode(dashboard_code, "Unauthorized request");
+  isExist(dashboard_code, "Unauthorized request");
 
   const response = await service.pollDetailService(dashboard_code);
   const { result } = response;
@@ -60,7 +60,14 @@ export const pollDetailController = async (
 };
 
 export const pollVoteGetController = async (req: Request, res: Response) => {
-  const { id, title, description, visibility, status,question } = req.questionData;
+  const { id, title, description, visibility, status, question } =
+    req.questionData;
+
+  const fingerPrintId = req.query.fingerPrintId as string;
+
+  isExist(fingerPrintId, "Unauthorized request");
+
+  console.log("finger print id: ", fingerPrintId);
 
   const result = await service.pollVoteGetService({
     id,
@@ -68,7 +75,8 @@ export const pollVoteGetController = async (req: Request, res: Response) => {
     description,
     visibility,
     status,
-    question
+    question,
+    fingerPrintId,
   });
 
   ApiResponse.ok(res, 200, result, "Fetch successfully questions and answer");
@@ -76,7 +84,7 @@ export const pollVoteGetController = async (req: Request, res: Response) => {
 
 export const pollVotePostController = async (req: Request, res: Response) => {
   const { id } = req.questionData;
-  const body: { answerId: string } | null = req.body;
+  const body: { answerId: string; fingerPrintId: string } | null = req.body;
 
   if (!body) {
     throw ApiError.badRequest("Id is not found");
@@ -89,8 +97,17 @@ export const pollVotePostController = async (req: Request, res: Response) => {
 export const dashboardController = async (req: Request, res: Response) => {
   const { id }: { id: string } = req.user;
 
-  verifyCode(id, "Unauthorized request");
+  isExist(id, "Unauthorized request");
 
   const response = await service.dashboardService(id);
   ApiResponse.ok(res, 200, response, "Data found successfully");
+};
+
+export const deleteController = async (req: Request, res: Response) => {
+  const { id }: { id: string } = req.body;
+
+  isExist(id, "Unauthoreized request");
+
+  const response = await service.deleteService(id);
+  ApiResponse.ok(res, 200, response, "Delete successfully");
 };

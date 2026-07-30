@@ -7,6 +7,7 @@ import {
   uuid,
   varchar,
   text,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 
@@ -41,3 +42,45 @@ export const answers = pgTable("answers", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const singleUser = pgTable(
+  "single_user",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    questionId: uuid("question_id")
+      .notNull()
+      .references(() => question.id, { onDelete: "cascade" }),
+    answerId: uuid("answer_id")
+      .notNull()
+      .references(() => answers.id, { onDelete: "cascade" }),
+
+    // Nullable because public polls don't require authentication
+    userId: text("user_id").references(() => user.id, {
+      onDelete: "cascade",
+    }),
+    
+    // FingerprintJS visitorId
+    fingerprint: text("fingerprint").notNull(),
+
+    // Store a hash of the IP instead of the raw IP
+    ipHash: text("ip_hash"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    {
+      // One fingerprint can vote only once per question
+      fingerprintUnique: uniqueIndex("votes_question_fingerprint_idx").on(
+        table.questionId,
+        table.fingerprint,
+      ),
+    },
+
+    {
+      // One authenticated user can vote only once per question
+      userUnique: uniqueIndex("votes_question_user_idx").on(
+        table.questionId,
+        table.userId,
+      ),
+    },
+  ],
+);

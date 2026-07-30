@@ -1,9 +1,9 @@
 import crypto from "node:crypto";
-import { desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 
 import type { pollCreateType } from "./poll.types";
 import { db } from "../../index";
-import { answers, question } from "../../common/db/schema";
+import { answers, question, singleUser } from "../../common/db/schema";
 import ApiError from "../../common/utils/api-erros";
 import { user } from "../../common/db";
 import { getIO } from "../../common/socket";
@@ -131,71 +131,98 @@ export const pollVoteGetService = async (questionData: {
   visibility: string;
   status: "live" | "ended";
   question: string;
+  fingerPrintId: string;
 }) => {
-  // const [questionData] = await db
-  //   .select()
-  //   .from(question)
-  //   .where(eq(question.pollCode, pollCode));
+  try {
+    const [isDuplicate] = await db
+      .select()
+      .from(singleUser)
+      .where(
+        and(
+          eq(singleUser.questionId, questionData.id),
+          eq(singleUser.fingerprint, questionData.fingerPrintId),
+        ),
+      );
 
-  // if (!questionData) {
-  //   throw ApiError.InternalServerError("Error to getting poll");
-  // }
+    if (isDuplicate) {
+      return { alreadyVote: true };
+    }
 
-  // if (questionData.expireAt < new Date()) {
-  //   throw ApiError.badRequest("Poll is expired");
-  // }
+    const answerData = await db
+      .select({
+        id: answers.id,
+        questionId: answers.questionId,
+        title: answers.title,
+        isCorrect: answers.isCorrect,
+      })
+      .from(answers)
+      .where(eq(answers.questionId, questionData.id));
 
-  // if(questionData.visibility === "private"){
-  //   authentication(req: Request, res: Response, next: NextFunction)
-  // }
+    if (answerData.length === 0) {
+      throw ApiError.InternalServerError("Failed to get answers");
+    }
 
-  const answerData = await db
-    .select({
-      id: answers.id,
-      questionId: answers.questionId,
-      title: answers.title,
-      isCorrect: answers.isCorrect,
-    })
-    .from(answers)
-    .where(eq(answers.questionId, questionData.id));
+    return {
+      question: {
+        title: questionData.title,
+        description: questionData.description,
+        visibility: questionData.visibility,
+        status: questionData.status,
+        question: questionData.question,
+      },
 
-  if (answerData.length === 0) {
-    throw ApiError.InternalServerError("Failed to get answers");
+      answers: answerData,
+    };
+  } catch (error) {
+    console.log(error);
+    throw ApiError.notFound("Error from getting");
   }
-
-  return {
-    question: {
-      title: questionData.title,
-      description: questionData.description,
-      visibility: questionData.visibility,
-      status: questionData.status,
-      question: questionData.question,
-    },
-
-    answers: answerData,
-  };
 };
 
 export const pollVotePostService = async (
   id: string,
-  body: { answerId: string },
+  body: { answerId: string; fingerPrintId: string },
 ) => {
   try {
-    const answerId = body.answerId;
+    const { answerId, fingerPrintId } = body;
 
-    const [updateVote] = await db
-      .update(answers)
-      .set({ votes: sql`${answers.votes} + 1` })
-      .where(eq(answers.id, answerId))
-      .returning({
-        id: answers.id,
-        votes: answers.votes,
-        title: answers.title,
+    const [existingVote] = await db
+      .select()
+      .from(singleUser)
+      .where(
+        and(
+          eq(singleUser.questionId, id),
+          eq(singleUser.fingerprint, fingerPrintId),
+        ),
+      );
+
+    if (existingVote) {
+      throw ApiError.conflict("You have already voted");
+    }
+
+    const updateVote = await db.transaction(async (tx) => {
+      await tx.insert(singleUser).values({
+        questionId: id,
+        answerId: answerId,
+        fingerprint: fingerPrintId,
       });
 
-    if (!updateVote) {
-      throw ApiError.badRequest("Unauthorized vote count");
-    }
+      const [updateAnswer] = await db
+        .update(answers)
+        .set({ votes: sql`${answers.votes} + 1` })
+        .where(eq(answers.id, answerId))
+        .returning({
+          id: answers.id,
+          votes: answers.votes,
+          title: answers.title,
+        });
+
+      if (!updateAnswer) {
+        throw ApiError.badRequest("Unauthorized vote count");
+      }
+
+      return updateAnswer;
+    });
 
     const io = getIO();
     console.log("updated");
@@ -226,4 +253,10 @@ export const dashboardService = async (id: string) => {
 
   const result = pollDetail.length > 0 ? pollDetail : null;
   return { result };
+};
+
+export const deleteService = async (id: string) => {
+  await db.delete(question).where(eq(question.id, id));
+
+  return { success: true };
 };

@@ -4,7 +4,11 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
 
 import { useForm } from "react-hook-form";
-import { Globe } from "lucide-react";
+import { Globe, Loader2 } from "lucide-react";
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import axios from "axios";
+import Error from "./error";
+import Success from "./succes";
 
 type VoteForm = {
     answerId: string;
@@ -13,6 +17,10 @@ type VoteForm = {
 const PollVote = () => {
     const [question, setQuestion] = useState<QuestionType | null>(null);
     const [answers, setAnswers] = useState<AnswersType>([]);
+    const [fingerPrintId, setFingerPrintId] = useState("");
+    const [error, setError] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [alreadyVoted, setAlreadyVoted] = useState(false);
 
     const { register, handleSubmit, watch } = useForm<VoteForm>();
 
@@ -20,36 +28,78 @@ const PollVote = () => {
     const pollCode = params.poll_code
 
     useEffect(() => {
+
         if (!pollCode) return;
 
         const pollVoteHandler = async () => {
-            const response = await pollVoteGet(pollCode);
+            try {
+                const fp = await FingerprintJS.load();
+                const result = await fp.get();
 
-            const { data } = response;
+                setFingerPrintId(result.visitorId);
 
-            setQuestion(data.question);
-            setAnswers(data.answers);
-        };
+                const response = await pollVoteGet(
+                    pollCode,
+                    result.visitorId
+                );
+
+                const { alreadyVote } = response.data
+                console.log("alreadyVote: ", alreadyVote)
+                if (alreadyVote) {
+                    setAlreadyVoted(true)
+                }
+
+                setQuestion(response.data.question);
+                setAnswers(response.data.answers);
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    if (error.response?.status === 410) {
+                        setError(true);
+                    }
+                }
+            }
+        }
 
         pollVoteHandler();
+
     }, [params.poll_code]);
 
     const onSubmit = async (votePayload: VoteForm) => {
-        if (!pollCode) return;
+        if (!pollCode || isSubmitting) return;
 
-        const response = await pollVotePost(pollCode, votePayload.answerId);
-        const { data } = response;
-        console.log(data);
-        // console.log(data.data.id)
-        // console.log(data.data.votes)
+        setIsSubmitting(true);
+
+        try {
+            const response = await pollVotePost(pollCode, votePayload.answerId, fingerPrintId);
+            const { data } = response;
+            console.log(data);
+
+            if (data.id) {
+                setAlreadyVoted(true)
+            }
+            // console.log(data.data.id)
+            // console.log(data.data.votes)
+        }
+        finally {
+            setIsSubmitting(false);
+        }
     };
 
     const selected = watch("answerId");
 
+    if (alreadyVoted) {
+        return <Success message="You have voted successfully!" />
+    }
+
+    if (error) {
+        return <Error />;
+    }
+
+
     if (!question) {
         return (
-            <div className="flex h-[70vh] items-center justify-center">
-                Loading...
+            <div className="flex min-h-screen items-center justify-center">
+                Fetching the Questions
             </div>
         );
     }
@@ -122,11 +172,18 @@ const PollVote = () => {
 
                     <button
                         type="submit"
-                        disabled={!selected}
-                        className="mt-6 w-full rounded-lg bg-blue-600 px-4 py-2 text-md 
+                        disabled={!selected || isSubmitting}
+                        className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-md 
                         font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300"
                     >
-                        Submit Vote
+                        {isSubmitting ? (
+                            <>
+                                <Loader2 size={16} className="animate-spin" />
+                                Submitting...
+                            </>
+                        ) : (
+                            "Submit Vote"
+                        )}
                     </button>
                 </form>
             </div>
