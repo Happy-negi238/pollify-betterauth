@@ -33,20 +33,18 @@ const Dashboard = () => {
     dashboardDetailHandler();
   }, []);
 
-
   const logOutHandler = async () => {
     console.log("handler");
     const response = await signOut();
     const { error } = response.data;
 
-
     if (error) {
-      toast.error("Failed to log out")
+      toast.error("Failed to log out");
       return;
     }
 
     setSession(null);
-  }
+  };
 
   const deleteHandler = async (id: string) => {
     if (deletingId) return;
@@ -58,7 +56,9 @@ const Dashboard = () => {
       const { message } = response;
 
       toast.success(message);
-      setPolls((prev) => (prev ? prev.filter((question) => question.id !== id) : prev));
+      setPolls((prev) =>
+        prev ? prev.filter((question) => question.id !== id) : prev,
+      );
     } catch {
       toast.error("Failed to delete poll");
     } finally {
@@ -93,9 +93,7 @@ const Dashboard = () => {
       <div className="mx-auto max-w-5xl px-5 py-8">
         <div className="mb-8 flex items-start justify-between">
           <div className="">
-            <h1 className="text-3xl font-bold tracking-tight">
-              Dashboard
-            </h1>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
 
             <p className="mt-1 text-sm text-muted-foreground">
               Manage all your polls
@@ -103,8 +101,10 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-2">
             <Link to={"/polls"}>
-              <button className="flex items-center gap-1 rounded-lg bg-black px-4 py-2 text-sm 
-              font-semibold text-white shadow-[inset_0_0_8px_rgba(255,255,255,1)]">
+              <button
+                className="flex items-center gap-1 rounded-lg bg-black px-4 py-2 text-sm 
+              font-semibold text-white shadow-[inset_0_0_8px_rgba(255,255,255,1)]"
+              >
                 <PlusIcon size={16} strokeWidth={2} />
                 Create Poll
               </button>
@@ -131,14 +131,13 @@ const Dashboard = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <div className=" flex gap-2 items-center">
-                    <h2 className="text-lg font-semibold">
-                      {poll.title}
-                    </h2>
+                    <h2 className="text-lg font-semibold">{poll.title}</h2>
                     <div
-                      className={`rounded px-2 py-0.5 text-xs font-medium ${poll.status === "live"
-                        ? "bg-green-100 text-green-700 border border-green-300/40"
-                        : "bg-red-100 text-red-700 border border-red-300"
-                        }`}
+                      className={`rounded px-2 py-0.5 text-xs font-medium ${
+                        poll.status === "live"
+                          ? "bg-green-100 text-green-700 border border-green-300/40"
+                          : "bg-red-100 text-red-700 border border-red-300"
+                      }`}
                     >
                       {poll.status}
                     </div>
@@ -169,24 +168,29 @@ const Dashboard = () => {
               </div>
 
               <div className="mt-5 flex flex-wrap items-center justify-between gap-5 text-sm text-muted-foreground">
-                <div className="flex items-center gap-0.5 text-blue-600/70 hover:text-blue-600 transition-all ease-in-out
-                 duration-100 font-medium">
+                <div
+                  className="flex items-center gap-0.5 text-blue-600/70 hover:text-blue-600 transition-all ease-in-out
+                 duration-100 font-medium"
+                >
                   {poll.visibility === "public" ? (
                     <Globe size={14} />
                   ) : (
                     <Lock size={14} />
                   )}
 
-                  {poll.visibility.charAt(0).toUpperCase() + poll.visibility.slice(1)}
+                  {poll.visibility.charAt(0).toUpperCase() +
+                    poll.visibility.slice(1)}
                 </div>
 
-                <div className="flex items-center gap-1 text-orange-500/80 transition-all ease-in-out
-                 duration-100 font-medium">
+                <div
+                  className="flex items-center gap-1 text-orange-500/80 transition-all ease-in-out
+                 duration-100 font-medium"
+                >
                   <CalendarDays size={14} />
                   {new Date(poll.createdAt).toLocaleDateString()}
                 </div>
 
-                <Link to={`/poll-details/${poll.dashboardCode}`}>
+                <Link to={`/poll-detail/${poll.dashboardCode}`}>
                   <div className="flex items-center gap-1 font-medium">
                     <ExternalLink size={14} />
                     Link
@@ -198,7 +202,6 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
-
   );
 };
 

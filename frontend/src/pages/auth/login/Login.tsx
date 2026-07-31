@@ -11,16 +11,15 @@ type SignInForm = {
 };
 
 const Login = () => {
-
   const navigation = useNavigate();
-  const { setSession } = useAuth()
+  const { setSession } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignInForm>({
-    mode: "onBlur"
+    mode: "onBlur",
   });
 
   const onSubmit = async (signInFormFields: SignInForm) => {
@@ -41,7 +40,7 @@ const Login = () => {
 
       navigation("/dashboard");
     } catch (error) {
-      toast.error("Error: Creating account")
+      toast.error("Error: Creating account");
     }
   };
 

@@ -1,10 +1,9 @@
-
 export type Visibility = "public" | "private";
 
 export type AnswerField = {
   title: string;
-  isCorrect: boolean
-}
+  isCorrect: boolean;
+};
 
 export type PollFormValues = {
   title: string;
@@ -13,4 +12,4 @@ export type PollFormValues = {
   visibility: Visibility;
   question: string;
   answers: AnswerField[];
-}
+};

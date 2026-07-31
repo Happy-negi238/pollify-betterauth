@@ -28,16 +28,11 @@ export const pollPrivate = async (
     throw ApiError.InternalServerError("Error to getting poll");
   }
 
-  if (questionData.status === "ended") {
-    throw ApiError.gone("Poll is expired");
-  }
-
   if (questionData.expireAt < new Date()) {
     await db
       .update(question)
       .set({ status: "ended" })
       .where(eq(question.pollCode, poll_code));
-    throw ApiError.gone("Poll is expired");
   }
 
   if (questionData.visibility === "private") {

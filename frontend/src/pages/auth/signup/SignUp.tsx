@@ -12,7 +12,6 @@ type SignUpForm = {
 };
 
 const SignUp = () => {
-
   const navigation = useNavigate();
 
   const {
@@ -21,7 +20,7 @@ const SignUp = () => {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<SignUpForm>({
-    mode: "onBlur"
+    mode: "onBlur",
   });
 
   const password = watch("password");
@@ -43,7 +42,7 @@ const SignUp = () => {
 
       navigation("/log-in");
     } catch (error) {
-      toast.error("Error: Creating account")
+      toast.error("Error: Creating account");
     }
   };
 

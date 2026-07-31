@@ -1,25 +1,23 @@
-import {
-  Activity,
-  Share2,
-  ShieldCheck,
-  Smartphone,
-} from "lucide-react";
+import { Activity, Share2, ShieldCheck, Smartphone } from "lucide-react";
 
 const features = [
   {
     icon: Activity,
     title: "Real-time Results",
-    description: "Watch votes update instantly as participants cast their responses.",
+    description:
+      "Watch votes update instantly as participants cast their responses.",
   },
   {
     icon: Share2,
     title: "Easy Sharing",
-    description: "Share polls using a simple link. No account required to vote.",
+    description:
+      "Share polls using a simple link. No account required to vote.",
   },
   {
     icon: ShieldCheck,
     title: "Secure & Private",
-    description: "Create public or private polls with complete control over access.",
+    description:
+      "Create public or private polls with complete control over access.",
   },
   {
     icon: Smartphone,

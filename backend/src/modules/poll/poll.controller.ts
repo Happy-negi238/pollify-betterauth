@@ -60,14 +60,12 @@ export const pollDetailController = async (
 };
 
 export const pollVoteGetController = async (req: Request, res: Response) => {
-  const { id, title, description, visibility, status, question } =
+  const { id, title, description, visibility, status, question, expireAt } =
     req.questionData;
 
   const fingerPrintId = req.query.fingerPrintId as string;
 
   isExist(fingerPrintId, "Unauthorized request");
-
-  console.log("finger print id: ", fingerPrintId);
 
   const result = await service.pollVoteGetService({
     id,
@@ -76,6 +74,7 @@ export const pollVoteGetController = async (req: Request, res: Response) => {
     visibility,
     status,
     question,
+    expireAt,
     fingerPrintId,
   });
 

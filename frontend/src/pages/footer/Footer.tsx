@@ -4,9 +4,7 @@ const Footer = () => {
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 text-sm text-slate-600 md:flex-row">
-        <p>
-          © {new Date().getFullYear()} Pollify. All rights reserved.
-        </p>
+        <p>© {new Date().getFullYear()} Pollify. All rights reserved.</p>
 
         <div className="flex items-center gap-5">
           <a

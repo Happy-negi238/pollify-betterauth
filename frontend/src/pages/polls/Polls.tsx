@@ -17,19 +17,19 @@ const VISIBILITY_OPTIONS: {
   description: string;
   icon: typeof Users;
 }[] = [
-    {
-      value: "public",
-      label: "Anonymous",
-      description: "Anyone can vote without identity.",
-      icon: Users,
-    },
-    {
-      value: "private",
-      label: "Private",
-      description: "Only invited users can vote.",
-      icon: Lock,
-    },
-  ];
+  {
+    value: "public",
+    label: "Anonymous",
+    description: "Anyone can vote without identity.",
+    icon: Users,
+  },
+  {
+    value: "private",
+    label: "Private",
+    description: "Only invited users can vote.",
+    icon: Lock,
+  },
+];
 
 const MIN_ANSWERS = 2;
 const MAX_ANSWERS = 10;
@@ -39,7 +39,6 @@ const MAX_ANSWERS = 10;
 // -------------------------------
 
 export function Polls() {
-
   const navigate = useNavigate();
 
   const [submitted, setSubmitted] = useState<PollFormValues | null>(null);
@@ -60,7 +59,10 @@ export function Polls() {
       durationSeconds: 60,
       visibility: "public",
       question: "",
-      answers: [{ title: "", isCorrect: false }, { title: "", isCorrect: false }],
+      answers: [
+        { title: "", isCorrect: false },
+        { title: "", isCorrect: false },
+      ],
     },
   });
 
@@ -110,7 +112,7 @@ export function Polls() {
     fields.forEach((_, i) =>
       setValue(`answers.${i}.isCorrect`, i === index, {
         shouldValidate: true,
-      })
+      }),
     );
   };
 
@@ -133,7 +135,11 @@ export function Polls() {
           </p>
         </header>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6"
+          noValidate
+        >
           {/* ---------------------------------------------------------- */}
           {/* Poll Details                                               */}
           {/* ---------------------------------------------------------- */}
@@ -153,10 +159,11 @@ export function Polls() {
                 id="title"
                 type="text"
                 placeholder="Which frontend framework do you prefer?"
-                className={`mt-1.5 w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 ${errors.title
-                  ? "border-red-500"
-                  : "border-slate-200 focus:border-blue-600"
-                  }`}
+                className={`mt-1.5 w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 ${
+                  errors.title
+                    ? "border-red-500"
+                    : "border-slate-200 focus:border-blue-600"
+                }`}
                 {...register("title", {
                   required: "Title is required.",
                   minLength: {
@@ -170,9 +177,7 @@ export function Polls() {
                 })}
               />
               <div className="mt-1 flex items-center justify-between">
-                <p className="text-xs text-red-500">
-                  {errors.title?.message}
-                </p>
+                <p className="text-xs text-red-500">{errors.title?.message}</p>
                 <p className="text-xs text-slate-400">
                   {watch("title")?.length ?? 0}/20
                 </p>
@@ -190,10 +195,11 @@ export function Polls() {
                 id="description"
                 rows={3}
                 placeholder="Tell voters what this poll is about..."
-                className={`mt-1.5 w-full resize-none rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 ${errors.description
-                  ? "border-red-500"
-                  : "border-slate-200 focus:border-blue-600"
-                  }`}
+                className={`mt-1.5 w-full resize-none rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 ${
+                  errors.description
+                    ? "border-red-500"
+                    : "border-slate-200 focus:border-blue-600"
+                }`}
                 {...register("description", {
                   maxLength: {
                     value: 30,
@@ -254,10 +260,11 @@ export function Polls() {
                         shouldValidate: true,
                       })
                     }
-                    className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${durationSeconds === preset
-                      ? "bg-blue-600 text-white"
-                      : "bg-slate-100 text-slate-500 hover:bg-slate-200"
-                      }`}
+                    className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                      durationSeconds === preset
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-500 hover:bg-slate-200"
+                    }`}
                   >
                     {preset}s
                   </button>
@@ -280,10 +287,11 @@ export function Polls() {
                       return (
                         <label
                           key={option.value}
-                          className={`relative flex cursor-pointer flex-col gap-2 rounded-lg border p-3 transition-colors ${active
-                            ? "border-blue-600 bg-blue-50/60 ring-1 ring-blue-600"
-                            : "border-slate-200 bg-white hover:border-slate-300"
-                            }`}
+                          className={`relative flex cursor-pointer flex-col gap-2 rounded-lg border p-3 transition-colors ${
+                            active
+                              ? "border-blue-600 bg-blue-50/60 ring-1 ring-blue-600"
+                              : "border-slate-200 bg-white hover:border-slate-300"
+                          }`}
                         >
                           <input
                             type="radio"
@@ -293,18 +301,18 @@ export function Polls() {
                           />
                           <span className="flex items-center gap-2">
                             <span
-                              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${active
-                                ? "border-blue-600"
-                                : "border-slate-300"
-                                }`}
+                              className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
+                                active ? "border-blue-600" : "border-slate-300"
+                              }`}
                             >
                               {active && (
                                 <span className="h-2 w-2 rounded-full bg-blue-600" />
                               )}
                             </span>
                             <Icon
-                              className={`h-4 w-4 ${active ? "text-blue-600" : "text-slate-400"
-                                }`}
+                              className={`h-4 w-4 ${
+                                active ? "text-blue-600" : "text-slate-400"
+                              }`}
                             />
                             <span className="text-sm font-medium text-slate-900">
                               {option.label}
@@ -326,17 +334,16 @@ export function Polls() {
           {/* Question                                                   */}
           {/* ---------------------------------------------------------- */}
           <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-slate-900">
-              Question
-            </h2>
+            <h2 className="text-base font-semibold text-slate-900">Question</h2>
             <div className="mt-4">
               <input
                 type="text"
                 placeholder="What is your favourite frontend framework?"
-                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 ${errors.question
-                  ? "border-red-500"
-                  : "border-slate-200 focus:border-blue-600"
-                  }`}
+                className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600/30 ${
+                  errors.question
+                    ? "border-red-500"
+                    : "border-slate-200 focus:border-blue-600"
+                }`}
                 {...register("question", {
                   required: "Question is required.",
                   minLength: {
@@ -403,10 +410,11 @@ export function Polls() {
                       <input
                         id={`answers.${index}.title`}
                         type="text"
-                        className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/30 ${fieldError || isDuplicate
-                          ? "border-red-500"
-                          : "border-slate-200 focus:border-blue-600"
-                          }`}
+                        className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-600/30 ${
+                          fieldError || isDuplicate
+                            ? "border-red-500"
+                            : "border-slate-200 focus:border-blue-600"
+                        }`}
                         {...register(`answers.${index}.title`, {
                           validate: (value) =>
                             value.trim().length > 0 ||
@@ -473,7 +481,6 @@ export function Polls() {
               {isSubmitting ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-9 w-24 animate-spin" />
-                  
                 </span>
               ) : (
                 "Create Poll"
@@ -497,4 +504,4 @@ export function Polls() {
   );
 }
 
-export default Polls
+export default Polls;

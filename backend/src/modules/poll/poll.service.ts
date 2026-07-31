@@ -131,21 +131,26 @@ export const pollVoteGetService = async (questionData: {
   visibility: string;
   status: "live" | "ended";
   question: string;
+  expireAt: Date;
   fingerPrintId: string;
 }) => {
   try {
-    const [isDuplicate] = await db
-      .select()
-      .from(singleUser)
-      .where(
-        and(
-          eq(singleUser.questionId, questionData.id),
-          eq(singleUser.fingerprint, questionData.fingerPrintId),
-        ),
-      );
+    if (questionData.status === "live") {
+      if (new Date() < questionData.expireAt) {
+        const [isDuplicate] = await db
+          .select()
+          .from(singleUser)
+          .where(
+            and(
+              eq(singleUser.questionId, questionData.id),
+              eq(singleUser.fingerprint, questionData.fingerPrintId),
+            ),
+          );
 
-    if (isDuplicate) {
-      return { alreadyVote: true };
+        if (isDuplicate) {
+          return { alreadyVote: true };
+        }
+      }
     }
 
     const answerData = await db
@@ -154,6 +159,7 @@ export const pollVoteGetService = async (questionData: {
         questionId: answers.questionId,
         title: answers.title,
         isCorrect: answers.isCorrect,
+        votes: answers.votes,
       })
       .from(answers)
       .where(eq(answers.questionId, questionData.id));
@@ -169,6 +175,7 @@ export const pollVoteGetService = async (questionData: {
         visibility: questionData.visibility,
         status: questionData.status,
         question: questionData.question,
+        expire: questionData.expireAt,
       },
 
       answers: answerData,
@@ -250,6 +257,19 @@ export const dashboardService = async (id: string) => {
     .from(question)
     .where(eq(question.userId, id))
     .orderBy(desc(question.createdAt));
+
+  if (pollDetail.length > 0) {
+    const now = new Date();
+
+    for (const poll of pollDetail) {
+      if (poll.status === "live" && poll.expireAt < now) {
+        await db
+          .update(question)
+          .set({ status: "ended" })
+          .where(eq(question.id, poll.id));
+      }
+    }
+  }
 
   const result = pollDetail.length > 0 ? pollDetail : null;
   return { result };

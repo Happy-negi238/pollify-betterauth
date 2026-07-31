@@ -66,6 +66,7 @@ export type QuestionType = {
   visibility: string;
   status: "live" | "ended";
   question: string;
+  expire: Date;
 };
 
 export type AnswersType = {
@@ -73,11 +74,12 @@ export type AnswersType = {
   questionId: string;
   title: string;
   isCorrect: boolean | null;
+  votes: number;
 }[];
 
 export type QuestionAnswerResponseType = {
   data: {
-    alreadyVote: boolean
+    alreadyVote: boolean;
     question: QuestionType;
     answers: AnswersType;
   };

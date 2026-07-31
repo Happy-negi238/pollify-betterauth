@@ -18,45 +18,43 @@ const Header = () => {
           <h1 className="text-xl font-bold text-slate-800">Pollify</h1>
         </div>
 
-        {session ?
-          (
-            <div className="flex items-center gap-3">
-              {showCreateButton && (
-                <Link to={"/polls"}>
-                  <button className="flex items-center gap-1 rounded-lg bg-black px-4 py-2 text-sm 
-                font-semibold text-white shadow-[inset_0_0_8px_rgba(255,255,255,1)]">
-                    <Plus size={17} /> <span>Create Poll</span>
-                  </button>
-                </Link>
-              )}
-
-              <Link to={"/dashboard"}>
+        {session ? (
+          <div className="flex items-center gap-3">
+            {showCreateButton && (
+              <Link to={"/polls"}>
                 <button
-                  className="rounded-lg cursor-pointer px-4 py-2 text-sm font-semibold text-neutral-800
-                border border-neutral-500/20 shadow/5 hover:shadow/10 flex items-center justify-center gap-1"
+                  className="flex items-center gap-1 rounded-lg bg-black px-4 py-2 text-sm 
+                font-semibold text-white shadow-[inset_0_0_8px_rgba(255,255,255,1)]"
                 >
-                  <User2Icon size={17} />  <span>Dashboard</span>
+                  <Plus size={17} /> <span>Create Poll</span>
                 </button>
               </Link>
-            </div>
-          ) :
-          (
-            <div className="flex gap-3">
-              <Link to="/log-in">
-                <button className="rounded-lg border border-slate-300 px-4 py-2 text-sm">
-                  Log in
-                </button>
-              </Link>
+            )}
 
-              <Link to="/sign-up">
-                <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700">
-                  Sign up
-                </button>
-              </Link>
-            </div>
-          )
-        }
+            <Link to={"/dashboard"}>
+              <button
+                className="rounded-lg cursor-pointer px-4 py-2 text-sm font-semibold text-neutral-800
+                border border-neutral-500/20 shadow/5 hover:shadow/10 flex items-center justify-center gap-1"
+              >
+                <User2Icon size={17} /> <span>Dashboard</span>
+              </button>
+            </Link>
+          </div>
+        ) : (
+          <div className="flex gap-3">
+            <Link to="/log-in">
+              <button className="rounded-lg border border-slate-300 px-4 py-2 text-sm">
+                Log in
+              </button>
+            </Link>
 
+            <Link to="/sign-up">
+              <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700">
+                Sign up
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );
