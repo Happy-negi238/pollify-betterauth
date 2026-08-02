@@ -181,7 +181,6 @@ export const pollVoteGetService = async (questionData: {
       answers: answerData,
     };
   } catch (error) {
-    console.log(error);
     throw ApiError.notFound("Error from getting");
   }
 };
@@ -232,8 +231,6 @@ export const pollVotePostService = async (
     });
 
     const io = getIO();
-    console.log("updated");
-    // console.log("io: ", io);
 
     io.emit("server:poll:updated", {
       updatedAnswer: updateVote,
@@ -279,4 +276,18 @@ export const deleteService = async (id: string) => {
   await db.delete(question).where(eq(question.id, id));
 
   return { success: true };
+};
+
+export const endPollService = async (dashboardCode: string) => {
+  const [endPoll] = await db
+    .update(question)
+    .set({ status: "ended", expireAt: new Date() })
+    .where(eq(question.dashboardCode, dashboardCode))
+    .returning({ status: question.status, expireAt: question.expireAt });
+
+  if (!endPoll) {
+    throw ApiError.InternalServerError("Failed to end poll");
+  }
+
+  return { success: true, endPoll: endPoll };
 };

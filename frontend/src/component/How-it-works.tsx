@@ -34,7 +34,7 @@ const HowItWorks = () => {
             How it Works
           </span>
 
-          <h2 className="mt-4 text-3xl font-semibold text-slate-900">
+          <h2 className="mt-4 text-4xl font-semibold text-slate-900">
             Create a poll in three simple steps
           </h2>
 

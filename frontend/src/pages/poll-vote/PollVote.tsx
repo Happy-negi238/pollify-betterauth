@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { Globe, Loader2 } from "lucide-react";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 import axios from "axios";
-import Error from "./error";
 import Success from "./succes";
 import Result from "./result";
 
@@ -41,7 +40,6 @@ const PollVote = () => {
         const response = await pollVoteGet(pollCode, result.visitorId);
 
         const { alreadyVote } = response.data;
-        console.log(response.data.answers);
         if (alreadyVote) {
           setAlreadyVoted(true);
         }
@@ -76,8 +74,6 @@ const PollVote = () => {
       if (data.id) {
         setAlreadyVoted(true);
       }
-      // console.log(data.data.id)
-      // console.log(data.data.votes)
     } finally {
       setIsSubmitting(false);
     }

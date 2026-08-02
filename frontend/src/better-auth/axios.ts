@@ -12,7 +12,6 @@ export const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("interceptors: ", error.message);
     toast.error(error.response?.data.message);
 
     return Promise.reject(error);

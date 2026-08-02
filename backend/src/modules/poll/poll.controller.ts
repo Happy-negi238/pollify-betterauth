@@ -110,3 +110,15 @@ export const deleteController = async (req: Request, res: Response) => {
   const response = await service.deleteService(id);
   ApiResponse.ok(res, 200, response, "Delete successfully");
 };
+
+export const endPollController = async (
+  req: Request<{ dashboard_code: string }>,
+  res: Response,
+) => {
+  const { dashboard_code } = req.params;
+
+  isExist(dashboard_code, "Unauthorized request");
+
+  const response = await service.endPollService(dashboard_code);
+  ApiResponse.ok(res, 200, response, "Poll ended successfully");
+}

@@ -86,7 +86,6 @@ export const pollVoteGet = async (
   pollCode: string,
   fingerPrintId: string,
 ): Promise<QuestionAnswerResponseType> => {
-  console.log("finger print id frontend: ", fingerPrintId);
   const response = await api.get<QuestionAnswerResponseType>(
     `/poll/poll-vote/${pollCode}`,
     {
@@ -116,6 +115,12 @@ export const pollVotePost = async (
 
 export const deleteQuestion = async (id: string) => {
   const response = await api.delete("poll/delete", { data: { id } });
+  const { data, message } = response.data;
+  return { data, message };
+};
+
+export const endPoll = async (dashboardCode: string) => {
+  const response = await api.post(`/poll/end-poll/${dashboardCode}`);
   const { data, message } = response.data;
   return { data, message };
 };

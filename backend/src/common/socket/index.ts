@@ -21,7 +21,6 @@ export const socketIntializer = (server: HttpServer) => {
 
     socket.on("disconnect", (data) => {
       console.log("Socket disconnect: ", socket.id);
-      console.log(data);
     });
   });
 

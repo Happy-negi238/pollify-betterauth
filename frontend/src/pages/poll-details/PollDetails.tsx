@@ -1,4 +1,4 @@
-import { deleteQuestion, getPollDetail } from "@/better-auth/api";
+import { deleteQuestion, endPoll, getPollDetail } from "@/better-auth/api";
 import type { PollAnswer, PollDetailType } from "@/better-auth/types";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -8,10 +8,9 @@ import {
   UserRound,
   QrCode,
   Copy,
-  ChartColumn,
-  Edit3,
   Trash2,
   PlusIcon,
+  Power,
 } from "lucide-react";
 import QRCode from "react-qr-code";
 import { socket } from "@/socket";
@@ -52,7 +51,6 @@ function PollInformationCard({ poll }: { poll: PollDetailType }) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="text-slate-900">
-        <h2 className="text-lg font-semibold">{poll.title}</h2>
         <p className="mt-2 text-sm leading-6 text-slate-600">
           {poll.description}
         </p>
@@ -154,8 +152,8 @@ function SharePollCard({ poll }: { poll: PollDetailType }) {
             </div>
             <button
               onClick={handleCopy}
-              className="inline-flex items-center justify-center gap-2 rounded-lg
-                             bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 hover:bg-blue-700"
+              className="flex items-center gap-1 rounded-lg bg-blue-600 px-5 py-2.5 text-sm 
+                font-semibold text-white shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)]"
             >
               <Copy className="h-4 w-4" strokeWidth={2} />
               {copied ? "Copied" : "Copy link"}
@@ -172,15 +170,27 @@ function Header({
   duration,
   questionId,
   isDeleting,
+  isEnding,
   onDelete,
+  onEnd,
 }: {
   title: string;
   duration: string | Date;
   questionId: string;
   isDeleting: boolean;
+  isEnding: boolean;
   onDelete: (questionId: string) => void;
+  onEnd: (dashboardCode: string | undefined) => void;
 }) {
-  const isActive = new Date(duration) > new Date();
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    const isActive = new Date(duration) > new Date();
+    setIsActive(isActive);
+  }, [duration]);
+
+  // get poll code from params
+  const { dashboard_code: dashboardCode } = useParams();
 
   return (
     <header className="mb-8">
@@ -193,36 +203,40 @@ function Header({
                   {title}
                 </h1>
                 <span
-                  className={`flex rounded-md border px-2 py-0.5 text-xs font-medium ${
-                    isActive
-                      ? "border-green-500 text-green-500"
-                      : "border-red-500 text-red-500"
-                  }`}
+                  className={`flex rounded-md border px-2 py-0.5 text-xs font-medium ${isActive
+                    ? "border-green-500 text-green-500"
+                    : "border-red-500 text-red-500"
+                    }`}
                 >
                   {isActive ? "Active" : "Ended"}
                 </span>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-3">
-              <button className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">
-                <Edit3 className="h-4 w-4" strokeWidth={2} />
-                Edit
-              </button>
               <Link to={"/polls"}>
                 <button
-                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200
-                             bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
+                  className="flex items-center gap-1 rounded-lg bg-blue-600 px-4 py-2 text-sm 
+                font-semibold text-white shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)]"
                 >
                   <PlusIcon className="h-4 w-4" strokeWidth={2} />
                   Create Poll
                 </button>
               </Link>
+
+              {/* implement end poll button */}
               <button
-                className="inline-flex items-center gap-2 rounded-xl bg-slate-900 
-                            px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800"
+                onClick={() => onEnd(dashboardCode)}
+                disabled={!isActive || isEnding}
+                className={`flex items-center gap-1 rounded-lg bg-white px-4 py-2 text-sm 
+              font-semibold text-zinc-600 border border-zinc-200 shadow 
+              ${!isActive || isEnding ? "opacity-50 cursor-not-allowed" : "hover:bg-zinc-50"}`}
               >
-                <ChartColumn className="h-4 w-4" strokeWidth={2} />
-                Publish Results
+                {isEnding ? (
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-current border-t-transparent animate-spin" />
+                ) : (
+                  <Power className="h-4 w-4" strokeWidth={2} />
+                )}
+                {isEnding ? "Ending..." : "End Poll"}
               </button>
               <button
                 onClick={() => onDelete(questionId)}
@@ -256,6 +270,7 @@ const PollDetails = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEnding, setIsEnding] = useState(false);
 
   const navigation = useNavigate();
 
@@ -267,13 +282,44 @@ const PollDetails = () => {
     );
     if (!confirmed) return;
 
-    const response = await deleteQuestion(questionId);
-    const { message } = response;
-    toast.success(message);
-
-    navigation("/dashboard");
-
     setIsDeleting(true);
+
+    try {
+      const response = await deleteQuestion(questionId);
+      const { message } = response;
+      toast.success(message);
+      navigation("/dashboard");
+    } catch (error) {
+      toast.error("Failed to delete poll");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleEndPoll = async (dashboardCode: string | undefined) => {
+    if (!dashboardCode) return;
+
+    setIsEnding(true);
+
+    try {
+      const response = await endPoll(dashboardCode);
+      const endedPoll = response.data?.endPoll;
+
+      toast.success("Poll ended successfully");
+
+      setPollData((prev) => {
+        if (!prev) return prev;
+
+        return {
+          ...prev,
+          duration: endedPoll?.expireAt ? new Date(endedPoll.expireAt) : prev.duration,
+        };
+      });
+    } catch (error) {
+      toast.error("Failed to end poll");
+    } finally {
+      setIsEnding(false);
+    }
   };
 
   useEffect(() => {
@@ -305,13 +351,9 @@ const PollDetails = () => {
 
     socket.connect();
     socket.on("server:poll:updated", (poll) => {
-      console.log("Previous Poll Data:", pollData);
-      console.log("Updated Answer:", poll);
-
       const updateAnswer = poll.updatedAnswer as PollAnswer;
 
       setPollData((prev) => {
-        console.log("prev: ", prev);
         if (!prev) return prev;
 
         return {
@@ -349,7 +391,9 @@ const PollDetails = () => {
           duration={pollData.duration}
           questionId={pollData.id}
           isDeleting={isDeleting}
+          isEnding={isEnding}
           onDelete={handleDelete}
+          onEnd={handleEndPoll}
         />
 
         <div className="flex flex-col gap-6 items-start">

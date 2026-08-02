@@ -45,7 +45,7 @@ const Pricing = () => {
             Pricing
           </span>
 
-          <h2 className="mt-4 text-3xl font-semibold text-slate-900">
+          <h2 className="mt-4 text-4xl font-semibold text-slate-900">
             Simple pricing for everyone
           </h2>
 

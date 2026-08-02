@@ -27,3 +27,4 @@ pollRoutes.post(
 );
 pollRoutes.get("/dashboard", authentication, controller.dashboardController);
 pollRoutes.delete("/delete", authentication, controller.deleteController);
+pollRoutes.post("/end-poll/:dashboard_code", authentication, controller.endPollController);

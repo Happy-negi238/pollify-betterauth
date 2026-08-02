@@ -474,13 +474,13 @@ export function Polls() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`inline-flex items-center justify-center rounded-lg 
-                h-9 w-24 text-sm font-medium text-white transition 
-                ${isSubmitting ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+              className={`flex items-center gap-1 rounded-lg px-4 py-2 text-sm 
+                font-semibold text-white shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)] text-shadow-2xs text-shadow-black/40
+                ${isSubmitting ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-600/90"}`}
             >
               {isSubmitting ? (
                 <span className="inline-flex items-center gap-2">
-                  <Loader2 className="h-9 w-24 animate-spin" />
+                  <Loader2 className="h-5 w-18 animate-spin" />
                 </span>
               ) : (
                 "Create Poll"

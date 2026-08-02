@@ -36,7 +36,7 @@ const Features = () => {
             Features
           </span>
 
-          <h2 className="mt-4 text-3xl font-semibold text-slate-900">
+          <h2 className="mt-4 text-4xl font-semibold text-slate-900">
             Everything you need to create engaging polls
           </h2>
 

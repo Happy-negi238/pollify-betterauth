@@ -23,8 +23,8 @@ const Header = () => {
             {showCreateButton && (
               <Link to={"/polls"}>
                 <button
-                  className="flex items-center gap-1 rounded-lg bg-black px-4 py-2 text-sm 
-                font-semibold text-white shadow-[inset_0_0_8px_rgba(255,255,255,1)]"
+                  className="flex items-center gap-1 rounded-lg bg-blue-600 px-4 py-2 text-sm 
+                font-semibold text-white shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)]"
                 >
                   <Plus size={17} /> <span>Create Poll</span>
                 </button>
@@ -33,8 +33,9 @@ const Header = () => {
 
             <Link to={"/dashboard"}>
               <button
-                className="rounded-lg cursor-pointer px-4 py-2 text-sm font-semibold text-neutral-800
-                border border-neutral-500/20 shadow/5 hover:shadow/10 flex items-center justify-center gap-1"
+                className="rounded-lg cursor-pointer bg-zinc-100 text-zinc-700 px-4 py-2 text-sm font-semibold
+                border border-zinc-500/20 hover:bg-zinc-50 flex items-center justify-center gap-1
+                shadow-[inset_0_2px_1px_rgba(212,212,216,0.4)]"
               >
                 <User2Icon size={17} /> <span>Dashboard</span>
               </button>

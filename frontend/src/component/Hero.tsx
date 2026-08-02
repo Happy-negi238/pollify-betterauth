@@ -1,4 +1,4 @@
-import { BarChart2 } from "lucide-react";
+import { ArrowRight, BarChart2 } from "lucide-react";
 
 const Hero = () => {
   return (
@@ -24,11 +24,13 @@ const Hero = () => {
           </p>
 
           <div className="mt-8 flex items-center gap-4">
-            <button className="rounded-lg bg-blue-600 px-6 py-3 text-md font-medium text-white transition hover:bg-blue-700">
+            <button className="flex items-center gap-1 rounded-lg bg-blue-600 hover:bg-blue-600/90 px-5 py-3 text-sm 
+                font-semibold text-white shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)]">
               Create account
+              <ArrowRight size={17}/>
             </button>
           </div>
-
+    
           <div className="mt-8 flex items-center gap-2 text-sm text-slate-500">
             <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-xs text-green-600">
               ✓

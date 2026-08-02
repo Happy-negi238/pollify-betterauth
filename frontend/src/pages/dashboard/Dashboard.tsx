@@ -22,6 +22,7 @@ const Dashboard = () => {
 
   const [polls, setPolls] = useState<DashboardType>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const dashboardDetailHandler = async () => {
@@ -34,16 +35,23 @@ const Dashboard = () => {
   }, []);
 
   const logOutHandler = async () => {
-    console.log("handler");
-    const response = await signOut();
-    const { error } = response.data;
+    if (isLoggingOut) return;
 
-    if (error) {
-      toast.error("Failed to log out");
-      return;
+    setIsLoggingOut(true);
+
+    try {
+      const response = await signOut();
+      const { error } = response.data;
+
+      if (error) {
+        toast.error("Failed to log out");
+        return;
+      }
+
+      setSession(null);
+    } finally {
+      setIsLoggingOut(false);
     }
-
-    setSession(null);
   };
 
   const deleteHandler = async (id: string) => {
@@ -102,8 +110,8 @@ const Dashboard = () => {
           <div className="flex items-center gap-2">
             <Link to={"/polls"}>
               <button
-                className="flex items-center gap-1 rounded-lg bg-black px-4 py-2 text-sm 
-              font-semibold text-white shadow-[inset_0_0_8px_rgba(255,255,255,1)]"
+                className="flex items-center gap-1 rounded-lg bg-blue-600 hover:bg-blue-600/90 px-4 py-2 text-sm 
+                font-semibold text-white shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)] text-shadow-2xs text-shadow-black/40"
               >
                 <PlusIcon size={16} strokeWidth={2} />
                 Create Poll
@@ -112,11 +120,21 @@ const Dashboard = () => {
 
             <button
               onClick={logOutHandler}
+              disabled={isLoggingOut}
               className="flex items-center gap-1 rounded-lg border border-red-300 bg-red-50
-               px-4 py-2 text-sm font-semibold text-red-600"
+               px-4 py-2 text-sm font-semibold text-red-600 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <PowerIcon size={16} />
-              Logout
+              {isLoggingOut ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Logging out...
+                </>
+              ) : (
+                <>
+                  <PowerIcon size={16} />
+                  Logout
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -133,11 +151,10 @@ const Dashboard = () => {
                   <div className=" flex gap-2 items-center">
                     <h2 className="text-lg font-semibold">{poll.title}</h2>
                     <div
-                      className={`rounded px-2 py-0.5 text-xs font-medium ${
-                        poll.status === "live"
+                      className={`rounded px-2 py-0.5 text-xs font-medium ${poll.status === "live"
                           ? "bg-green-100 text-green-700 border border-green-300/40"
                           : "bg-red-100 text-red-700 border border-red-300"
-                      }`}
+                        }`}
                     >
                       {poll.status}
                     </div>
