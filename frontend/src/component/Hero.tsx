@@ -1,4 +1,5 @@
 import { ArrowRight, BarChart2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
@@ -24,11 +25,13 @@ const Hero = () => {
           </p>
 
           <div className="mt-8 flex items-center gap-4">
+            <Link to={"/sign-up"}>
             <button className="flex items-center gap-1 rounded-lg bg-blue-600 hover:bg-blue-600/90 px-5 py-3 text-sm 
                 font-semibold text-white shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)]">
               Create account
               <ArrowRight size={17}/>
             </button>
+                  </Link>
           </div>
     
           <div className="mt-8 flex items-center gap-2 text-sm text-slate-500">

@@ -120,7 +120,9 @@ const Login = () => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-blue-600 py-3 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+            className="flex items-center gap-1 rounded-lg bg-blue-600 hover:bg-blue-600/90 
+            w-full justify-center py-3 text-sm font-semibold text-white 
+            shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isSubmitting ? "Creating account..." : "Create Account"}
           </button>

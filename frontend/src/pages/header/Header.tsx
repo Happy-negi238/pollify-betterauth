@@ -10,13 +10,15 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-slate-50/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <div className="flex items-center gap-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-            <BarChart2 strokeWidth={3} />
-          </div>
+        <Link to={"/"}>
+          <div className="flex items-center gap-1">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+              <BarChart2 strokeWidth={3} />
+            </div>
 
-          <h1 className="text-xl font-bold text-slate-800">Pollify</h1>
-        </div>
+            <h1 className="text-xl font-bold text-slate-800">Pollify</h1>
+          </div>
+        </Link>
 
         {session ? (
           <div className="flex items-center gap-3">
@@ -44,13 +46,16 @@ const Header = () => {
         ) : (
           <div className="flex gap-3">
             <Link to="/log-in">
-              <button className="rounded-lg border border-slate-300 px-4 py-2 text-sm">
+              <button className="rounded-lg cursor-pointer bg-zinc-100 text-zinc-700 px-4 py-2 text-sm font-semibold
+                border border-zinc-500/20 hover:bg-zinc-50 flex items-center justify-center gap-1
+                shadow-[inset_0_2px_1px_rgba(212,212,216,0.4)]">
                 Log in
               </button>
             </Link>
 
             <Link to="/sign-up">
-              <button className="rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700">
+              <button className="flex items-center gap-1 rounded-lg bg-blue-600 px-4 py-2 text-sm 
+                font-semibold text-white shadow-[inset_0_2px_1px_rgba(96,165,250,0.8)]">
                 Sign up
               </button>
             </Link>

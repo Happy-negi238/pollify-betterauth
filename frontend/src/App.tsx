@@ -19,7 +19,6 @@ import PollVote from "./pages/poll-vote/PollVote";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
-      <Route index element={<Home />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="dashboard" element={<Dashboard />} />
@@ -29,6 +28,8 @@ const router = createBrowserRouter(
       <Route path="vote/:poll_code" element={<PollVote />} />
 
       <Route element={<PublicRoute />}>
+        <Route index element={<Home />} />
+
         <Route path="sign-up" element={<SignUp />} />
         <Route path="log-in" element={<Login />} />
       </Route>
