@@ -3,11 +3,11 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-import { pollRoutes } from "./src/modules/poll/poll.route";
+import { pollRoutes } from "./modules/poll/poll.route";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./src/modules/auth/auth";
-import { corsConfig, socketIntializer } from "./src/common/socket";
-import { errorHandler } from "./src/common/utils/error-handler";
+import { auth } from "./modules/auth/auth";
+import { corsConfig, socketIntializer } from "./common/socket";
+import { errorHandler } from "./common/utils/error-handler";
 
 function main() {
   const app = express();

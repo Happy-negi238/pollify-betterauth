@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Globe, Loader2 } from "lucide-react";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-import axios from "axios";
+// import axios from "axios";
 import Success from "./succes";
 import Result from "./result";
 
@@ -18,7 +18,7 @@ const PollVote = () => {
   const [question, setQuestion] = useState<QuestionType | null>(null);
   const [answers, setAnswers] = useState<AnswersType>([]);
   const [fingerPrintId, setFingerPrintId] = useState("");
-  const [error, setError] = useState(false);
+  // const [error, setError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [alreadyVoted, setAlreadyVoted] = useState(false);
 
@@ -47,11 +47,11 @@ const PollVote = () => {
         setQuestion(response.data.question);
         setAnswers(response.data.answers);
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          if (error.response?.status === 410) {
-            setError(true);
-          }
-        }
+        // if (axios.isAxiosError(error)) {
+        //   if (error.response?.status === 410) {
+        //     setError(true);
+        //   }
+        // }
       }
     };
 

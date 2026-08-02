@@ -33,7 +33,7 @@ const SignUp = () => {
         password: signUpFormFields.password,
       });
 
-      const { data, error } = response.data;
+      const { error } = response.data;
 
       if (error) {
         toast.error(error.message!);
