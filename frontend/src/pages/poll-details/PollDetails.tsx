@@ -41,7 +41,13 @@ function QrPlaceholder({ value }: { value: string }) {
 
 // ---- Cards ---------------------------------
 
-function PollInformationCard({ poll }: { poll: PollDetailType }) {
+function PollInformationCard({ poll, answer }: { poll: PollDetailType; answer: PollAnswer[] }) {
+  const [totalVotes, setTotalVotes] = useState(0);
+
+  useEffect(() => {
+    setTotalVotes(answer.reduce((acc, curr) => acc + curr.votes, 0));
+  }, [answer]);
+
   const expires =
     poll.duration instanceof Date
       ? poll.duration.toLocaleString()
@@ -81,7 +87,7 @@ function PollInformationCard({ poll }: { poll: PollDetailType }) {
             <UserRound className="h-4 w-4" strokeWidth={2} />
             <span className="text-sm font-medium">Responses</span>
           </div>
-          <p className="mt-3 text-base font-semibold text-slate-900">0</p>
+          <p className="mt-3 text-base font-semibold text-slate-900">{totalVotes}</p>
         </div>
 
         <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
@@ -398,7 +404,7 @@ const PollDetails = () => {
 
         <div className="flex flex-col gap-6 items-start">
           <div className="w-full">
-            <PollInformationCard poll={pollData} />
+            <PollInformationCard poll={pollData} answer={pollData.answers} />
           </div>
           <div className="w-full">
             <SharePollCard poll={pollData} />

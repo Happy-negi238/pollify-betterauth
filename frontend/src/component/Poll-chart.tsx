@@ -1,4 +1,5 @@
 import type { PollChartProps } from "@/better-auth/types";
+import { useEffect, useState } from "react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -20,7 +21,11 @@ const COLORS = [
 ];
 
 const PollChart = ({ answer }: PollChartProps) => {
-  const totalVotes = answer.reduce((acc, curr) => acc + curr.votes, 0);
+  const [totalVotes, setTotalVotes] = useState(0);
+
+  useEffect(() => {
+    setTotalVotes(answer.reduce((acc, curr) => acc + curr.votes, 0))
+  }, [answer])
 
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">

@@ -10,6 +10,6 @@ export const auth = betterAuth({
   }),
 
   trustedOrigins: [process.env.FRONTEND_URL ?? "http://localhost:5173"],
-  baseURL: "http://localhost:3000/",
+  baseURL: process.env.BASE_URL ?? "http://localhost:3000",
   emailAndPassword: { enabled: true },
 });
