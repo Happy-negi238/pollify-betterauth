@@ -7,11 +7,11 @@ const answersSchema = z.object({
 
 const pollCreateSchema = z
   .object({
-    title: z.string().max(20).min(2),
-    description: z.string().max(50).optional(),
+    title: z.string().max(50).min(2),
+    description: z.string().max(100).optional(),
     visibility: z.enum(["public", "private"]),
     durationSeconds: z.number().int().positive(),
-    question: z.string().max(30),
+    question: z.string().max(100),
     answers: z.array(answersSchema).min(2).max(6),
   })
   .refine((data) => data.answers.some((answer) => answer.isCorrect), {

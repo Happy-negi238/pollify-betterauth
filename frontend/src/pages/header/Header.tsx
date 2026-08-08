@@ -16,7 +16,7 @@ const Header = () => {
               <BarChart2 strokeWidth={3} />
             </div>
 
-            <h1 className="text-xl font-bold text-slate-800">Pollify</h1>
+            <h1 className="text-xl font-bold text-slate-800">Polls-forge</h1>
           </div>
         </Link>
 

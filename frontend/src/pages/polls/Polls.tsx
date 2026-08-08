@@ -32,7 +32,7 @@ const VISIBILITY_OPTIONS: {
 ];
 
 const MIN_ANSWERS = 2;
-const MAX_ANSWERS = 10;
+const MAX_ANSWERS = 6;
 
 // ------------------------------
 // Component
@@ -171,15 +171,15 @@ export function Polls() {
                     message: "Title must be at least 5 characters.",
                   },
                   maxLength: {
-                    value: 20,
-                    message: "Title must be at most 20 characters.",
+                    value: 50,
+                    message: "Title must be at most 50 characters.",
                   },
                 })}
               />
               <div className="mt-1 flex items-center justify-between">
                 <p className="text-xs text-red-500">{errors.title?.message}</p>
                 <p className="text-xs text-slate-400">
-                  {watch("title")?.length ?? 0}/20
+                  {watch("title")?.length ?? 0}/50
                 </p>
               </div>
             </div>
@@ -202,8 +202,8 @@ export function Polls() {
                 }`}
                 {...register("description", {
                   maxLength: {
-                    value: 30,
-                    message: "Description must be at most 30 characters.",
+                    value: 100,
+                    message: "Description must be at most 100 characters.",
                   },
                 })}
               />
@@ -212,7 +212,7 @@ export function Polls() {
                   {errors.description?.message}
                 </p>
                 <p className="text-xs text-slate-400">
-                  {watch("description")?.length ?? 0}/30
+                  {watch("description")?.length ?? 0}/100
                 </p>
               </div>
             </div>
@@ -351,8 +351,8 @@ export function Polls() {
                     message: "Question must be at least 5 characters.",
                   },
                   maxLength: {
-                    value: 250,
-                    message: "Question must be at most 250 characters.",
+                    value: 100,
+                    message: "Question must be at most 100 characters.",
                   },
                 })}
               />
@@ -361,7 +361,7 @@ export function Polls() {
                   {errors.question?.message}
                 </p>
                 <p className="text-xs text-slate-400">
-                  {watch("question")?.length ?? 0}/250
+                  {watch("question")?.length ?? 0}/100
                 </p>
               </div>
             </div>

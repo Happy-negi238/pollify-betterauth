@@ -75,6 +75,7 @@ export const pollCreateService = async (
       };
     });
   } catch (error) {
+    console.error("An internal error occurred while inserting question and answer: ",error)
     throw ApiError.InternalServerError(
       "An internal error occurred while inserting question and answer",
     );

@@ -19,12 +19,12 @@ export const question = pgTable("question", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  title: varchar("title", { length: 20 }).notNull(),
-  description: varchar("description", { length: 50 }),
+  title: varchar("title", { length: 50 }).notNull(),
+  description: varchar("description", { length: 100 }),
   visibility: visibilityEnum("visibility").default("public").notNull(),
   expireAt: timestamp("expire_at").notNull(),
   status: statusEnum("status").default("live").notNull(),
-  question: varchar("question", { length: 30 }).notNull(),
+  question: varchar("question", { length: 100 }).notNull(),
   dashboardCode: varchar("dashboard_code", { length: 18 }).notNull(),
   pollCode: varchar("poll_code", { length: 18 }).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
